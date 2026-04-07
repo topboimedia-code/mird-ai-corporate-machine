@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #050D1A;
+  --surface: #0A1628;
+  --surface-hover: #0F1E35;
+  --border: #1A2A42;
+  --border-hover: #2A3F60;
+  --cyan: #00D4FF;
+  --orange: #FF6B35;
+  --green: #00FF88;
+  --red: #FF3B3B;
+  --text: #E8F4FF;
+  --text-muted: #8BA3BF;
+  --text-dim: #4A6A8A;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--background);
+  color: var(--text);
+}

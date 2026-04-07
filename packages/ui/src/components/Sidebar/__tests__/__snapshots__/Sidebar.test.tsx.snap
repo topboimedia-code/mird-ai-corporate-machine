@@ -1,0 +1,114 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sidebar > renders collapsed 1`] = `
+<aside
+  class="flex flex-col h-full bg-surface border-r border-border transition-all duration-300 w-[60px]"
+>
+  <div
+    class="flex items-center h-16 px-4 border-b border-border justify-center"
+  />
+  <nav
+    class="flex-1 overflow-y-auto py-4"
+  >
+    <ul
+      class="flex flex-col gap-1 px-2"
+    >
+      <li>
+        <a
+          class="flex items-center gap-3 rounded py-2 transition-all font-display text-xs uppercase tracking-widest bg-cyan/10 text-cyan justify-center px-0"
+          data-testid="sidebar-item-dashboard"
+          href="/dashboard"
+          title="Dashboard"
+        >
+          <span
+            class="flex-shrink-0"
+          >
+            <span>
+              D
+            </span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="flex items-center gap-3 rounded py-2 transition-all font-display text-xs uppercase tracking-widest text-text-muted hover:text-text hover:bg-surface-hover justify-center px-0"
+          data-testid="sidebar-item-leads"
+          href="/leads"
+          title="Leads"
+        >
+          <span
+            class="flex-shrink-0"
+          >
+            <span>
+              L
+            </span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+`;
+
+exports[`Sidebar > renders expanded 1`] = `
+<aside
+  class="flex flex-col h-full bg-surface border-r border-border transition-all duration-300 w-[240px]"
+>
+  <div
+    class="flex items-center h-16 px-4 border-b border-border justify-between"
+  />
+  <nav
+    class="flex-1 overflow-y-auto py-4"
+  >
+    <ul
+      class="flex flex-col gap-1 px-2"
+    >
+      <li>
+        <a
+          class="flex items-center gap-3 rounded px-2 py-2 transition-all font-display text-xs uppercase tracking-widest bg-cyan/10 text-cyan"
+          data-testid="sidebar-item-dashboard"
+          href="/dashboard"
+        >
+          <span
+            class="flex-shrink-0"
+          >
+            <span>
+              D
+            </span>
+          </span>
+          <span
+            class="flex-1 truncate"
+          >
+            Dashboard
+          </span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="flex items-center gap-3 rounded px-2 py-2 transition-all font-display text-xs uppercase tracking-widest text-text-muted hover:text-text hover:bg-surface-hover"
+          data-testid="sidebar-item-leads"
+          href="/leads"
+        >
+          <span
+            class="flex-shrink-0"
+          >
+            <span>
+              L
+            </span>
+          </span>
+          <span
+            class="flex-1 truncate"
+          >
+            Leads
+          </span>
+          <span
+            class="ml-auto bg-cyan/20 text-cyan text-[10px] font-mono px-1.5 py-0.5 rounded"
+          >
+            5
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+`;

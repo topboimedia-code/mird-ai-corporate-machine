@@ -1,0 +1,538 @@
+{
+  "$schema": "../../../ralph/schemas/ralph-backlog.schema.json",
+  "meta": {
+    "name": "RainMachine \u2014 Cycle 1: Walking Skeleton",
+    "mode": "implementation",
+    "cycle": 1,
+    "release": "R0",
+    "prdSources": [
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "created": "2026-04-06",
+    "exitGate": "Monorepo builds + all 16 components on /ui-demo + CEO+RM auth end-to-end + RLS pgTAP passing"
+  },
+  "stories": [
+    {
+      "id": "f01-monorepo-init",
+      "title": "Initialize Turborepo + pnpm workspace at repo root",
+      "priority": 1,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@prd-implementer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "turbo.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "pnpm-workspace.yaml"
+        },
+        {
+          "type": "file-exists",
+          "value": "package.json"
+        },
+        {
+          "type": "command",
+          "value": "pnpm install",
+          "description": "Workspace installs cleanly"
+        }
+      ]
+    },
+    {
+      "id": "f01-apps-scaffold",
+      "title": "Create 3 Next.js 15 App Router apps: dashboard, ceo, onboarding",
+      "priority": 2,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@prd-implementer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/onboarding/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/app/page.tsx"
+        },
+        {
+          "type": "file-contains",
+          "file": "apps/dashboard/app/page.tsx",
+          "contains": "RainMachine"
+        }
+      ]
+    },
+    {
+      "id": "f01-packages-scaffold",
+      "title": "Create 3 shared packages: @rainmachine/ui, @rainmachine/db, @rainmachine/config",
+      "priority": 3,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@prd-implementer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "packages/ui/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/db/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/config/package.json"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/config/tailwind-preset.ts"
+        },
+        {
+          "type": "artifact-check",
+          "value": "packages/config exports eslint config and tsconfig.base.json"
+        }
+      ]
+    },
+    {
+      "id": "f01-turbo-pipeline",
+      "title": "Configure turbo.json pipeline: build \u2192 lint \u2192 typecheck \u2192 test",
+      "priority": 4,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@prd-implementer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-contains",
+          "file": "turbo.json",
+          "contains": "\"build\""
+        },
+        {
+          "type": "file-contains",
+          "file": "turbo.json",
+          "contains": "\"lint\""
+        },
+        {
+          "type": "file-contains",
+          "file": "turbo.json",
+          "contains": "\"typecheck\""
+        },
+        {
+          "type": "command",
+          "value": "pnpm build",
+          "description": "Turborepo build pipeline succeeds"
+        }
+      ]
+    },
+    {
+      "id": "f01-env-validation",
+      "title": "Add @t3-oss/env-nextjs env validation schema to all 3 apps",
+      "priority": 5,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@backend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/src/env.ts"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/src/env.ts"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/onboarding/src/env.ts"
+        },
+        {
+          "type": "file-contains",
+          "file": "apps/dashboard/src/env.ts",
+          "contains": "createEnv"
+        }
+      ]
+    },
+    {
+      "id": "f01-github-actions",
+      "title": "Create GitHub Actions CI: lint + typecheck on PR, build on merge to main",
+      "priority": 6,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F01-monorepo-foundation.md",
+      "skill": "@prd-implementer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": ".github/workflows/ci.yml"
+        },
+        {
+          "type": "file-contains",
+          "file": ".github/workflows/ci.yml",
+          "contains": "pnpm lint"
+        },
+        {
+          "type": "file-contains",
+          "file": ".github/workflows/ci.yml",
+          "contains": "pnpm typecheck"
+        }
+      ]
+    },
+    {
+      "id": "f02-tailwind-tokens",
+      "title": "Create JARVIS Dark Tailwind preset with all color + typography + spacing tokens",
+      "priority": 7,
+      "passes": true,
+      "source": "docs/prds/F02-design-system.md",
+      "skill": "@frontend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "packages/config/tailwind-preset.ts"
+        },
+        {
+          "type": "file-contains",
+          "file": "packages/config/tailwind-preset.ts",
+          "contains": "#00D4FF"
+        },
+        {
+          "type": "file-contains",
+          "file": "packages/config/tailwind-preset.ts",
+          "contains": "Orbitron"
+        },
+        {
+          "type": "file-contains",
+          "file": "packages/config/tailwind-preset.ts",
+          "contains": "Share Tech Mono"
+        }
+      ],
+      "completedAt": "2026-04-06"
+    },
+    {
+      "id": "f02-ui-components",
+      "title": "Build all 16 JARVIS Dark UI components in packages/ui with TypeScript props and data-testid",
+      "priority": 8,
+      "passes": true,
+      "source": "docs/prds/F02-design-system.md",
+      "skill": "@frontend-engineer",
+      "tasks": [
+        "Button",
+        "Input",
+        "Card",
+        "Badge",
+        "Modal",
+        "Toast",
+        "DataTable",
+        "Sparkline",
+        "ProgressBar",
+        "StepIndicator",
+        "Tabs",
+        "Sidebar",
+        "StatusDot",
+        "Skeleton",
+        "EmptyState",
+        "AlertBanner"
+      ],
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "packages/ui/src/index.ts"
+        },
+        {
+          "type": "artifact-check",
+          "value": "packages/ui/src/index.ts exports all 16 components"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/ui/src/components/Button/index.tsx"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/ui/src/components/StatusDot/index.tsx"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/ui/src/components/EmptyState/index.tsx"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/ui/src/components/DataTable/index.tsx"
+        }
+      ],
+      "completedAt": "2026-04-06"
+    },
+    {
+      "id": "f02-ui-demo",
+      "title": "Create /ui-demo page in apps/dashboard rendering all 16 components in all variants",
+      "priority": 9,
+      "passes": true,
+      "source": "docs/prds/F02-design-system.md",
+      "skill": "@frontend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/app/ui-demo/page.tsx"
+        },
+        {
+          "type": "ui-validation",
+          "route": "/ui-demo",
+          "check": "content-exists",
+          "target": "data-testid=ui-demo-root"
+        }
+      ],
+      "completedAt": "2026-04-06"
+    },
+    {
+      "id": "f02-component-tests",
+      "title": "Write RTL snapshot tests for all 16 components",
+      "priority": 10,
+      "passes": true,
+      "source": "docs/prds/F02-design-system.md",
+      "skill": "@test-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "command",
+          "value": "pnpm test --filter=@rainmachine/ui",
+          "description": "All 16 component snapshot tests pass"
+        }
+      ],
+      "completedAt": "2026-04-06"
+    },
+    {
+      "id": "f03-db-migration",
+      "title": "Write Supabase migration: 12 tables (tenants, users, agents, leads, calls, appointments, campaigns, ad_metrics, reports, agent_logs, alerts, metrics) with RLS + pgTAP tests",
+      "priority": 11,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@database-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "artifact-check",
+          "value": "supabase/migrations/ contains at least 12 migration files"
+        },
+        {
+          "type": "artifact-check",
+          "value": "All 12 tables have RLS enabled and tenant_isolation policy"
+        },
+        {
+          "type": "file-exists",
+          "value": "supabase/tests/rls/leads.sql"
+        },
+        {
+          "type": "command",
+          "value": "pnpm supabase test db",
+          "description": "pgTAP tests: tenant isolation + CEO access verified"
+        }
+      ]
+    },
+    {
+      "id": "f03-packages-db",
+      "title": "Build packages/db: createServerClient, createAdminClient, createBrowserClient, generated TypeScript types, RLS-aware query helpers",
+      "priority": 12,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@backend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "packages/db/src/server.ts"
+        },
+        {
+          "type": "artifact-check",
+          "value": "createServerClient exported from packages/db"
+        },
+        {
+          "type": "artifact-check",
+          "value": "createAdminClient exported from packages/db"
+        },
+        {
+          "type": "file-exists",
+          "value": "packages/db/src/types/database.types.ts"
+        }
+      ]
+    },
+    {
+      "id": "f03-auth-supabase",
+      "title": "Configure Supabase Auth: email/password, custom JWT claims (role + tenant_id), 5-attempt lockout, CEO TOTP 2FA enrollment",
+      "priority": 13,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@backend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "artifact-check",
+          "value": "custom_access_token_hook SQL function exists in migrations"
+        },
+        {
+          "type": "artifact-check",
+          "value": "JWT claims include role and tenant_id"
+        },
+        {
+          "type": "manual",
+          "value": "CEO TOTP 2FA enrollment tested manually in staging"
+        }
+      ]
+    },
+    {
+      "id": "f03-login-pages",
+      "title": "Build RM login page (/login), CEO login page, CEO 2FA verify page (/login/verify), session expiry modal",
+      "priority": 14,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@frontend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/app/(auth)/login/page.tsx"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/app/(auth)/login/page.tsx"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/app/(auth)/login/verify/page.tsx"
+        },
+        {
+          "type": "ui-validation",
+          "route": "/login",
+          "check": "content-exists",
+          "target": "data-testid=login-form"
+        }
+      ]
+    },
+    {
+      "id": "f03-auth-middleware",
+      "title": "Add Next.js middleware to dashboard and CEO apps: session guard + redirect to /login",
+      "priority": 15,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@backend-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/middleware.ts"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/middleware.ts"
+        },
+        {
+          "type": "file-contains",
+          "file": "apps/dashboard/middleware.ts",
+          "contains": "getSession"
+        }
+      ]
+    },
+    {
+      "id": "f03-create-tenant-edge-fn",
+      "title": "Create Supabase Edge Function 'create-tenant': atomic user + tenant row creation",
+      "priority": 16,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@database-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "supabase/functions/create-tenant/index.ts"
+        },
+        {
+          "type": "artifact-check",
+          "value": "Function creates user + tenant row atomically (transaction or saga)"
+        }
+      ]
+    },
+    {
+      "id": "f03-e2e-auth",
+      "title": "Write Playwright E2E tests: RM login \u2192 dashboard, CEO login \u2192 2FA \u2192 CEO app, session expiry modal",
+      "priority": 17,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/prds/F03-supabase-auth.md",
+      "skill": "@test-engineer",
+      "acceptanceCriteria": [
+        {
+          "type": "file-exists",
+          "value": "apps/dashboard/e2e/auth.spec.ts"
+        },
+        {
+          "type": "file-exists",
+          "value": "apps/ceo/e2e/auth.spec.ts"
+        },
+        {
+          "type": "command",
+          "value": ".sigma/tools/e2e.sh --app=dashboard",
+          "description": "Auth E2E tests pass"
+        }
+      ]
+    },
+    {
+      "id": "cycle-1-gate",
+      "title": "Cycle 1 exit gate: full validation pass across all 3 apps",
+      "priority": 18,
+      "passes": true,
+      "completedAt": "2026-04-06",
+      "source": "docs/implementation/BETTING-TABLE.md",
+      "skill": "@sigma-ralph",
+      "acceptanceCriteria": [
+        {
+          "type": "command",
+          "value": "pnpm build",
+          "description": "All 3 apps build successfully"
+        },
+        {
+          "type": "command",
+          "value": "pnpm typecheck",
+          "description": "0 TypeScript errors"
+        },
+        {
+          "type": "command",
+          "value": "pnpm lint",
+          "description": "0 lint errors"
+        },
+        {
+          "type": "command",
+          "value": "pnpm test",
+          "description": "All unit + integration tests pass"
+        },
+        {
+          "type": "command",
+          "value": "pnpm supabase test db",
+          "description": "pgTAP RLS tests pass"
+        },
+        {
+          "type": "ui-validation",
+          "route": "/ui-demo",
+          "check": "content-exists",
+          "target": "data-testid=ui-demo-root",
+          "description": "All 16 components render"
+        },
+        {
+          "type": "manual",
+          "value": "RM login \u2192 dashboard shell renders without errors"
+        },
+        {
+          "type": "manual",
+          "value": "CEO login + 2FA \u2192 CEO shell renders without errors"
+        }
+      ]
+    }
+  ]
+}

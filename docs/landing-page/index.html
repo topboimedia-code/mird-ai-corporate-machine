@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RainMachine — The AI Acquisition Platform for Real Estate Team Leaders</title>
+  <meta name="description" content="Give every agent on your team a full pipeline — automatically. AI follow-up, intelligent routing, done-for-you ads. One team per market." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    /* ============================================================
+       GLASSMORPHISM DARK — DESIGN TOKENS
+       Theme: Option B — Glass + Bento · "Stripe meets JARVIS"
+    ============================================================ */
+    :root {
+      /* Base */
+      --bg-base:    #04080F;
+      --bg-deep:    #060C18;
+
+      /* Glass surfaces */
+      --glass-bg:          rgba(255, 255, 255, 0.04);
+      --glass-bg-hover:    rgba(255, 255, 255, 0.07);
+      --glass-bg-strong:   rgba(255, 255, 255, 0.09);
+      --glass-border:      rgba(255, 255, 255, 0.10);
+      --glass-border-hover:rgba(255, 255, 255, 0.20);
+      --glass-highlight:   rgba(255, 255, 255, 0.15); /* top-edge shine */
+      --glass-blur:        blur(20px);
+      --glass-blur-heavy:  blur(40px);
+
+      /* Cyan accent — kept from JARVIS identity */
+      --cyan:          #00D4FF;
+      --cyan-hover:    #1ADCFF;
+      --cyan-dim:      rgba(0, 212, 255, 0.18);
+      --cyan-dim-soft: rgba(0, 212, 255, 0.08);
+      --cyan-glow:     rgba(0, 212, 255, 0.25);
+
+      /* Atmospheric / mesh colors */
+      --mesh-cyan:    rgba(0, 212, 255, 0.12);
+      --mesh-violet:  rgba(120, 80, 255, 0.10);
+      --mesh-blue:    rgba(30,  90, 255, 0.08);
+
+      /* Status */
+      --success: #00FF88;
+      --warning: #FFB800;
+      --alert:   #FF6B35;
+      --alert-text: #FF7D52;
+      --error:   #FF3333;
+
+      /* Text */
+      --text-primary:  #F0F6FF;
+      --text-secondary:#A8C0D6;
+      --text-muted:    #5A7A90;
+      --text-inverse:  #04080F;
+
+      /* Borders */
+      --border-glow:    rgba(0, 212, 255, 0.20);
+      --border-strong:  rgba(0, 212, 255, 0.45);
+      --border-success: rgba(0, 255, 136, 0.35);
+      --border-alert:   rgba(255, 107,  53, 0.35);
+      --border-warning: rgba(255, 184,   0, 0.35);
+
+      /* Glow shadows */
+      --glow-card:    0 4px 24px rgba(0,0,0,0.40), 0 1px 0 var(--glass-highlight) inset;
+      --glow-card-hover: 0 8px 40px rgba(0,0,0,0.50), 0 0 24px var(--cyan-glow), 0 1px 0 var(--glass-highlight) inset;
+      --glow-cyan:    0 0 24px rgba(0,212,255,0.35);
+      --glow-success: 0 0 24px rgba(0,255,136,0.25);
+      --glow-pulse:   0 0 32px rgba(0,212,255,0.50);
+
+      /* Typography */
+      --font-display: 'Orbitron', sans-serif;
+      --font-data:    'Share Tech Mono', monospace;
+      --font-body:    'Inter', sans-serif;
+
+      /* Spacing (4px base) */
+      --sp-1: 4px;  --sp-2: 8px;   --sp-3: 12px;  --sp-4: 16px;
+      --sp-5: 20px; --sp-6: 24px;  --sp-8: 32px;  --sp-10: 40px;
+      --sp-12: 48px; --sp-16: 64px; --sp-20: 80px; --sp-24: 96px;
+
+      /* Radius */
+      --r-sm:   6px;
+      --r-md:  12px;
+      --r-lg:  20px;
+      --r-xl:  28px;
+      --r-full: 9999px;
+
+      /* Layout */
+      --max-w: 1200px;
+    }
+
+    /* ============================================================
+       RESET
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: var(--cyan); text-decoration: none; transition: color 150ms; }
+    a:hover { color: var(--cyan-hover); }
+
+    /* ============================================================
+       BACKGROUND MESH — atmospheric glow blobs
+    ============================================================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15%  10%, var(--mesh-cyan),   transparent),
+        radial-gradient(ellipse 60% 50% at 85%  20%, var(--mesh-violet), transparent),
+        radial-gradient(ellipse 50% 40% at 50%  80%, var(--mesh-blue),   transparent),
+        radial-gradient(ellipse 40% 30% at 20%  70%, var(--mesh-cyan),   transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle dot grid overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* All content sits above mesh */
+    nav, section, footer, .section-wrap { position: relative; z-index: 1; }
+
+    /* ============================================================
+       CONTAINER
+    ============================================================ */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--sp-8);
+    }
+    @media (max-width: 768px) { .container { padding: 0 var(--sp-4); } }
+
+    section { padding: var(--sp-20) 0; }
+
+    /* ============================================================
+       GLASS CARD — core component
+    ============================================================ */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--glow-card);
+      transition: background 200ms, border-color 200ms, box-shadow 250ms, transform 200ms;
+    }
+    .glass:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-hover);
+      box-shadow: var(--glow-card-hover);
+    }
+    .glass--inset {
+      background: var(--glass-bg-strong);
+      border-radius: var(--r-md);
+    }
+    .glass--lift:hover { transform: translateY(-3px); }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border-radius: var(--r-full);
+      border: none;
+      cursor: pointer;
+      transition: all 200ms ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00D4FF 0%, #00A8CC 100%);
+      color: var(--text-inverse);
+      box-shadow: 0 0 24px rgba(0,212,255,0.40), 0 2px 8px rgba(0,0,0,0.30);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1ADCFF 0%, #00BEE0 100%);
+      box-shadow: 0 0 40px rgba(0,212,255,0.60), 0 4px 16px rgba(0,0,0,0.30);
+      transform: translateY(-1px);
+      color: var(--text-inverse);
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glow-card);
+    }
+    .btn-glass:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(255,255,255,0.25);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-cyan {
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 0 12px rgba(0,212,255,0.10);
+    }
+    .btn-outline-cyan:hover {
+      background: var(--cyan-dim-soft);
+      border-color: var(--border-strong);
+      color: var(--cyan-hover);
+      box-shadow: 0 0 20px rgba(0,212,255,0.20);
+    }
+
+    .btn-lg { padding: 18px 40px; font-size: 13px; }
+    .btn-sm { padding: 10px 20px; font-size: 11px; }
+
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 0 24px rgba(0,212,255,0.40), 0 2px 8px rgba(0,0,0,0.30); }
+      50%       { box-shadow: 0 0 48px rgba(0,212,255,0.65), 0 4px 16px rgba(0,0,0,0.30); }
+    }
+    .btn-pulse { animation: pulse-btn 2.5s ease-in-out infinite; }
+
+    /* ============================================================
+       LABELS / BADGES
+    ============================================================ */
+    .label-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: var(--r-full);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      margin-bottom: var(--sp-5);
+    }
+    .label-pill--alert   { color: var(--alert-text);  border-color: var(--border-alert);   background: rgba(255,107,53,0.06); }
+    .label-pill--success { color: var(--success);     border-color: var(--border-success);  background: rgba(0,255,136,0.06); }
+    .label-pill--warning { color: var(--warning);     border-color: var(--border-warning);  background: rgba(255,184,0,0.06); }
+
+    /* ============================================================
+       SECTION HEADLINES
+    ============================================================ */
+    .section-headline {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 3vw, 36px);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: var(--sp-5);
+    }
+
+    .section-sub {
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin-bottom: var(--sp-10);
+    }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fade-up   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fade-in   { from { opacity:0; } to { opacity:1; } }
+    @keyframes shimmer   { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes scanline  { 0%{top:-2px;opacity:.5} 100%{top:100%;opacity:0} }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 68px;
+      background: rgba(4, 8, 15, 0.75);
+      backdrop-filter: var(--glass-blur-heavy);
+      -webkit-backdrop-filter: var(--glass-blur-heavy);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex; align-items: center;
+      transition: transform 300ms ease;
+    }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; width:100%; }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 900; letter-spacing: 0.14em;
+      color: var(--text-primary); text-decoration: none;
+    }
+    .nav-logo span { color: var(--cyan); }
+
+    .nav-links { display:flex; gap:var(--sp-8); list-style:none; }
+    .nav-links a {
+      font-family: var(--font-display);
+      font-size: 10px; letter-spacing: 0.12em;
+      color: var(--text-secondary);
+      transition: color 150ms;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    @media (max-width: 768px) { .nav-links { display: none; } }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding-top: 68px;
+      overflow: hidden;
+    }
+
+    /* Floating glass orb behind hero */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero-orb-1 { width:500px; height:500px; background:rgba(0,212,255,0.08); top:-100px; right:-100px; }
+    .hero-orb-2 { width:400px; height:400px; background:rgba(120,80,255,0.07); bottom:-50px; left:-80px; animation-delay:-4s; }
+
+    .scanline {
+      position: absolute; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+      animation: scanline 3s ease-in-out .5s 1 forwards;
+      pointer-events: none; z-index: 2;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 860px; margin: 0 auto; text-align: center;
+      animation: fade-up .9s ease .2s both;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      font-family: var(--font-display);
+      font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--cyan);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--cyan-dim);
+      border-radius: var(--r-full);
+      padding: 7px 18px;
+      margin-bottom: var(--sp-8);
+    }
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse-btn 2s ease-in-out infinite;
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 5.5vw, 62px);
+      font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase;
+      line-height: 1.1; margin-bottom: var(--sp-6);
+
+      /* Glass-shimmer text fill */
+      background: linear-gradient(135deg, #FFFFFF 0%, #A8D8FF 40%, #00D4FF 70%, #FFFFFF 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 5s linear infinite;
+    }
+
+    .hero-sub {
+      font-size: 18px; line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 620px; margin: 0 auto var(--sp-10);
+    }
+
+    .hero-ctas {
+      display: flex; align-items: center; justify-content: center;
+      gap: var(--sp-4); flex-wrap: wrap;
+      margin-bottom: var(--sp-5);
+    }
+
+    .hero-cta-note {
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: var(--sp-10);
+    }
+
+    /* Trust bar — glass pill */
+    .trust-bar {
+      display: inline-flex; align-items: center; gap: var(--sp-5);
+      flex-wrap: wrap; justify-content: center;
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-full);
+      padding: var(--sp-3) var(--sp-6);
+    }
+    .trust-item { display:flex; align-items:center; gap:var(--sp-2); }
+    .trust-dot  { width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 6px var(--success); }
+    .trust-text { font-family:var(--font-data); font-size:12px; color:var(--text-secondary); }
+    .trust-sep  { color: var(--glass-border); }
+
+    /* ============================================================
+       METRICS ROW
+    ============================================================ */
+    #trust-row {
+      padding: var(--sp-12) 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-5);
+    }
+    @media (max-width: 768px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .metric-tile {
+      text-align: center; padding: var(--sp-6);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--glow-card);
+      transition: transform 200ms, box-shadow 200ms;
+    }
+    .metric-tile:hover { transform: translateY(-2px); box-shadow: var(--glow-card-hover); }
+
+    .metric-value {
+      font-family: var(--font-data); font-size: 44px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #00D4FF 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1; margin-bottom: var(--sp-2);
+    }
+    .metric-label  { font-family:var(--font-display); font-size:10px; letter-spacing:.14em; color:var(--text-secondary); margin-bottom:var(--sp-1); text-transform:uppercase; }
+    .metric-sub    { font-size:12px; color:var(--text-muted); }
+
+    /* ============================================================
+       PROBLEM
+    ============================================================ */
+    .pain-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-5); margin-bottom: var(--sp-10);
+    }
+    @media (max-width: 900px) { .pain-cards { grid-template-columns: 1fr; } }
+
+    .pain-card {
+      padding: var(--sp-8);
+      background: rgba(255, 107, 53, 0.05);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-alert);
+      border-top: 2px solid var(--alert);
+      border-radius: var(--r-lg);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.30), 0 0 20px rgba(255,107,53,0.06);
+      transition: transform 200ms, box-shadow 200ms;
+    }
+    .pain-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.40), 0 0 28px rgba(255,107,53,0.12); }
+
+    .pain-stat  { font-family:var(--font-data); font-size:44px; color:var(--alert-text); line-height:1; margin-bottom:var(--sp-2); }
+    .pain-title { font-family:var(--font-display); font-size:11px; letter-spacing:.12em; color:var(--alert-text); margin-bottom:var(--sp-3); }
+    .pain-body  { font-size:14px; color:var(--text-secondary); line-height:1.65; }
+
+    .problem-sub { font-style:italic; font-size:16px; color:var(--text-muted); margin-bottom:var(--sp-8); max-width:560px; }
+
+    /* ============================================================
+       THREE-PART — solution intro
+    ============================================================ */
+    .three-part {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5);
+    }
+    @media (max-width: 768px) { .three-part { grid-template-columns: 1fr; } }
+
+    .three-card {
+      padding: var(--sp-8);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top: 2px solid var(--cyan);
+      border-radius: var(--r-lg);
+      box-shadow: var(--glow-card);
+      transition: transform 200ms, box-shadow 200ms;
+    }
+    .three-card:hover { transform: translateY(-3px); box-shadow: var(--glow-card-hover); }
+
+    .three-icon {
+      width: 44px; height: 44px;
+      display:flex; align-items:center; justify-content:center;
+      background: var(--cyan-dim-soft);
+      border: 1px solid var(--cyan-dim);
+      border-radius: var(--r-md);
+      color: var(--cyan); margin-bottom: var(--sp-5);
+    }
+    .three-title { font-family:var(--font-display); font-size:12px; letter-spacing:.10em; color:var(--cyan); margin-bottom:var(--sp-3); }
+    .three-body  { font-size:14px; color:var(--text-secondary); line-height:1.65; }
+
+    /* ============================================================
+       BENTO GRID — feature showcase
+    ============================================================ */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: minmax(220px, auto);
+      gap: var(--sp-4);
+    }
+    @media (max-width: 960px) { .bento { grid-template-columns: 1fr; } .bento-wide { grid-column:1!important; } }
+
+    .bento-wide { grid-column: span 2; }
+
+    .bento-card {
+      padding: var(--sp-8);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--glow-card);
+      transition: background 200ms, border-color 200ms, box-shadow 250ms, transform 220ms;
+      position: relative; overflow: hidden;
+    }
+
+    /* Top shine line */
+    .bento-card::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+      border-radius: var(--r-full);
+    }
+
+    .bento-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-hover);
+      box-shadow: var(--glow-card-hover);
+      transform: translateY(-4px) scale(1.01);
+    }
+
+    /* Ambient glow blob inside card */
+    .bento-card::after {
+      content: ''; position: absolute;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: var(--mesh-cyan);
+      filter: blur(60px);
+      top: -60px; right: -60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    .bento-card > * { position: relative; z-index: 1; }
+
+    .bento-icon {
+      width: 48px; height: 48px;
+      display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(135deg, var(--cyan-dim-soft), transparent);
+      border: 1px solid var(--cyan-dim);
+      border-radius: var(--r-md);
+      color: var(--cyan); margin-bottom: var(--sp-5);
+    }
+
+    .bento-stat {
+      font-family: var(--font-data); font-size: 52px; line-height: 1;
+      background: linear-gradient(135deg, #FFFFFF 0%, #00D4FF 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--sp-3);
+    }
+
+    .bento-title { font-family:var(--font-display); font-size:13px; font-weight:700; letter-spacing:.08em; color:var(--text-primary); margin-bottom:var(--sp-3); }
+    .bento-body  { font-size:14px; color:var(--text-secondary); line-height:1.7; }
+
+    .bento-badge {
+      display:inline-block; margin-top:var(--sp-4);
+      font-family:var(--font-display); font-size:9px; letter-spacing:.14em;
+      padding: 4px 12px; border: 1px solid var(--cyan-dim);
+      border-radius: var(--r-full); color: var(--text-muted);
+    }
+
+    /* ============================================================
+       HOW IT WORKS — steps
+    ============================================================ */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-5);
+      position: relative;
+    }
+    /* connecting line */
+    .steps-grid::before {
+      content: '';
+      position: absolute; top: 36px; left: 12%; right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan-dim), var(--border-strong), var(--cyan-dim), transparent);
+    }
+    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } .steps-grid::before { display: none; } }
+
+    .step-card {
+      text-align: center; padding: var(--sp-8) var(--sp-6);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--glow-card);
+      transition: transform 200ms, box-shadow 200ms;
+    }
+    .step-card:hover { transform: translateY(-4px); box-shadow: var(--glow-card-hover); }
+
+    .step-num {
+      width: 60px; height: 60px; border-radius: 50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-data); font-size:20px;
+      margin: 0 auto var(--sp-5);
+      position: relative; z-index: 1;
+    }
+    .step-num--1 { background: rgba(0,212,255,0.10); border: 2px solid var(--cyan); color: var(--cyan); box-shadow: 0 0 20px rgba(0,212,255,0.30); }
+    .step-num--2 { background: rgba(255,184,0,0.10); border: 2px solid var(--warning); color: var(--warning); box-shadow: 0 0 20px rgba(255,184,0,0.20); }
+    .step-num--3 { background: rgba(0,255,136,0.10); border: 2px solid var(--success); color: var(--success); box-shadow: 0 0 20px rgba(0,255,136,0.20); }
+
+    .step-label { font-family:var(--font-display); font-size:9px; letter-spacing:.16em; color:var(--text-muted); margin-bottom:var(--sp-2); }
+    .step-title { font-family:var(--font-display); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--text-primary); margin-bottom:var(--sp-3); }
+    .step-body  { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+
+    .how-close {
+      margin-top: var(--sp-10); text-align:center;
+      font-style:italic; font-size:17px; color:var(--text-secondary);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-lg); padding: var(--sp-6) var(--sp-8);
+    }
+    .how-close strong { color: var(--cyan); font-style:normal; font-family:var(--font-data); }
+
+    /* ============================================================
+       GATE MECHANIC
+    ============================================================ */
+    .gate-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-12); align-items:center; }
+    @media (max-width: 768px) { .gate-grid { grid-template-columns:1fr; } }
+
+    .comparison-stack { display:flex; flex-direction:column; gap:var(--sp-4); }
+
+    .cmp-row {
+      display:flex; align-items:flex-start; gap:var(--sp-4);
+      padding: var(--sp-5) var(--sp-6);
+      border-radius: var(--r-lg);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      transition: transform 200ms;
+    }
+    .cmp-row:hover { transform: translateX(4px); }
+    .cmp-row--bad  { border-color: var(--border-alert);  background: rgba(255,107,53,0.05); }
+    .cmp-row--good { border-color: var(--border-glow);   background: rgba(0,212,255,0.04); }
+
+    .cmp-icon { font-family:var(--font-data); font-size:20px; flex-shrink:0; margin-top:2px; }
+    .cmp-icon--bad  { color: var(--alert); }
+    .cmp-icon--good { color: var(--success); }
+    .cmp-text { font-size:14px; color:var(--text-secondary); line-height:1.65; }
+    .cmp-text strong { color:var(--text-primary); }
+
+    /* ============================================================
+       SOCIAL PROOF — testimonials
+    ============================================================ */
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-5); margin-bottom:var(--sp-6); }
+    @media (max-width: 900px) { .testi-grid { grid-template-columns:1fr; } }
+
+    .testi-card {
+      padding: var(--sp-8);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--glow-card);
+      position: relative; overflow: hidden;
+      transition: transform 220ms, box-shadow 220ms;
+    }
+    .testi-card:hover { transform: translateY(-4px); box-shadow: var(--glow-card-hover); }
+
+    .testi-card::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+    }
+
+    .quote-mark {
+      position:absolute; top:var(--sp-4); right:var(--sp-5);
+      font-size:72px; font-family:Georgia,serif;
+      color: rgba(0,212,255,0.08); line-height:1; pointer-events:none;
+    }
+
+    .testi-quote { font-size:15px; line-height:1.8; color:var(--text-primary); font-style:italic; margin-bottom:var(--sp-6); position:relative; z-index:1; }
+
+    .testi-author { display:flex; align-items:center; gap:var(--sp-3); }
+    .author-avatar {
+      width:42px; height:42px; border-radius:50%;
+      background: linear-gradient(135deg, var(--cyan-dim-soft), rgba(120,80,255,0.10));
+      border:1px solid var(--glass-border);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:11px; color:var(--cyan); flex-shrink:0;
+    }
+    .author-status { width:8px; height:8px; border-radius:50%; background:var(--success); box-shadow:0 0 6px var(--success); flex-shrink:0; }
+    .author-name   { font-family:var(--font-display); font-size:10px; letter-spacing:.08em; color:var(--text-primary); }
+    .author-detail { font-family:var(--font-data); font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+    /* ============================================================
+       MARKET MAP
+    ============================================================ */
+    .market-section-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-12); align-items:start; }
+    @media (max-width: 768px) { .market-section-grid { grid-template-columns:1fr; } }
+
+    .market-panel {
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-xl);
+      padding: var(--sp-6);
+      box-shadow: var(--glow-card);
+    }
+    .market-panel-title {
+      font-family:var(--font-display); font-size:10px; letter-spacing:.14em;
+      color:var(--text-muted); padding-bottom:var(--sp-4);
+      border-bottom:1px solid var(--glass-border); margin-bottom:var(--sp-4);
+    }
+    .market-row { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .market-row:last-child { border-bottom:none; }
+    .market-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .market-dot--locked { background:var(--success); box-shadow:0 0 8px var(--success); }
+    .market-dot--open   { background:transparent; border:2px solid var(--cyan); box-shadow:0 0 6px rgba(0,212,255,.40); }
+    .market-name   { font-family:var(--font-data); font-size:13px; color:var(--text-primary); flex:1; }
+    .market-status { font-family:var(--font-display); font-size:9px; letter-spacing:.12em; }
+    .market-status--locked { color:var(--success); }
+    .market-status--open   { color:var(--cyan); }
+
+    /* ============================================================
+       PRICING
+    ============================================================ */
+    .pricing-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-4); align-items:start; }
+    @media (max-width: 1100px) { .pricing-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width: 600px)  { .pricing-grid { grid-template-columns:1fr; } }
+
+    .p-card {
+      padding: var(--sp-6);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--glow-card);
+      position: relative;
+      transition: transform 200ms, box-shadow 200ms;
+    }
+    .p-card:hover { transform: translateY(-3px); box-shadow: var(--glow-card-hover); }
+    .p-card--featured {
+      background: var(--glass-bg-hover);
+      border-color: var(--border-glow);
+      box-shadow: var(--glow-card), var(--glow-cyan);
+    }
+    .p-card--dbr {
+      border-color: var(--border-warning);
+      background: rgba(255,184,0,0.03);
+    }
+
+    .p-badge {
+      position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+      background: linear-gradient(135deg, #00D4FF, #0099BB);
+      color: var(--text-inverse);
+      font-family:var(--font-display); font-size:9px; letter-spacing:.14em;
+      padding: 5px 16px; border-radius:var(--r-full); white-space:nowrap;
+    }
+
+    .p-tier  { font-family:var(--font-display); font-size:10px; letter-spacing:.14em; color:var(--text-muted); margin-bottom:var(--sp-2); text-transform:uppercase; }
+    .p-price { font-family:var(--font-data); font-size:38px; color:var(--text-primary); line-height:1; margin-bottom:var(--sp-1); }
+    .p-price span { font-size:15px; color:var(--text-muted); }
+    .p-desc  { font-size:13px; color:var(--text-secondary); margin-bottom:var(--sp-5); line-height:1.55; min-height:56px; }
+    .p-divider { height:1px; background:var(--glass-border); margin-bottom:var(--sp-5); }
+    .p-features { list-style:none; display:flex; flex-direction:column; gap:var(--sp-3); margin-bottom:var(--sp-6); }
+    .p-features li { display:flex; gap:var(--sp-2); font-size:13px; color:var(--text-secondary); line-height:1.5; }
+    .p-features li::before { content:'✓'; color:var(--success); font-family:var(--font-data); flex-shrink:0; }
+    .p-math {
+      font-size:12px; color:var(--cyan); font-family:var(--font-data);
+      background: var(--cyan-dim-soft); border:1px solid var(--cyan-dim);
+      border-radius:var(--r-md); padding:var(--sp-3) var(--sp-4);
+      margin-bottom:var(--sp-5); line-height:1.6;
+    }
+    .p-cta { width:100%; justify-content:center; }
+
+    /* ============================================================
+       GUARANTEE
+    ============================================================ */
+    .guarantee-panel {
+      max-width:820px; margin:0 auto; text-align:center;
+      background: rgba(0,255,136,0.04);
+      backdrop-filter: var(--glass-blur-heavy);
+      border: 1px solid var(--border-success);
+      border-radius: var(--r-xl);
+      padding: var(--sp-16) var(--sp-12);
+      box-shadow: var(--glow-success), var(--glow-card);
+      position:relative; overflow:hidden;
+    }
+    .guarantee-panel::before {
+      content:'14';
+      position:absolute; top:-30px; right:-20px;
+      font-family:var(--font-data); font-size:180px;
+      color:rgba(0,255,136,0.04); line-height:1; pointer-events:none;
+    }
+    .guarantee-icon {
+      width:68px; height:68px; margin:0 auto var(--sp-6);
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,255,136,0.10); border:1px solid var(--border-success);
+      border-radius:50%; color:var(--success);
+    }
+    .g-headline {
+      font-family:var(--font-display); font-size:clamp(18px,3vw,30px);
+      font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+      color:var(--text-primary); margin-bottom:var(--sp-5);
+    }
+    .g-body { font-size:16px; line-height:1.8; color:var(--text-secondary); max-width:580px; margin:0 auto var(--sp-8); }
+
+    /* ============================================================
+       FAQ
+    ============================================================ */
+    .faq-list { max-width:800px; margin:0 auto; display:flex; flex-direction:column; gap:var(--sp-3); }
+
+    .faq-item {
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border:1px solid var(--glass-border);
+      border-radius:var(--r-lg); overflow:hidden;
+      transition: border-color 200ms;
+    }
+    .faq-item.open { border-color:var(--glass-border-hover); }
+
+    .faq-q {
+      width:100%; display:flex; align-items:center; justify-content:space-between;
+      padding:var(--sp-5) var(--sp-6); background:none; border:none; cursor:pointer; text-align:left; gap:var(--sp-4);
+    }
+    .faq-q-text { font-family:var(--font-display); font-size:12px; letter-spacing:.06em; color:var(--text-primary); }
+    .faq-chevron { color:var(--cyan); transition:transform 200ms; flex-shrink:0; }
+    .faq-item.open .faq-chevron { transform:rotate(180deg); }
+
+    .faq-a {
+      display:none; padding:0 var(--sp-6) var(--sp-5);
+      font-size:14px; line-height:1.8; color:var(--text-secondary);
+      border-top:1px solid var(--glass-border); padding-top:var(--sp-4);
+    }
+    .faq-item.open .faq-a { display:block; }
+    .faq-cta-wrap { text-align:center; margin-top:var(--sp-10); }
+    .faq-note { font-family:var(--font-display); font-size:11px; letter-spacing:.10em; color:var(--text-muted); margin-bottom:var(--sp-4); text-transform:uppercase; }
+
+    /* ============================================================
+       FOUNDER
+    ============================================================ */
+    .founder-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-12); align-items:center; }
+    @media (max-width: 768px) { .founder-grid { grid-template-columns:1fr; } }
+
+    .founder-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-4); margin-top:var(--sp-8); }
+    @media (max-width: 600px) { .founder-stats { grid-template-columns:1fr; } }
+
+    .f-stat {
+      text-align:center; padding:var(--sp-5);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border:1px solid var(--glass-border);
+      border-radius:var(--r-lg); box-shadow:var(--glow-card);
+    }
+    .f-stat-val { font-family:var(--font-data); font-size:28px; color:var(--cyan); margin-bottom:var(--sp-1); }
+    .f-stat-label { font-family:var(--font-display); font-size:9px; letter-spacing:.12em; color:var(--text-muted); text-transform:uppercase; }
+
+    .founder-note {
+      margin-top:var(--sp-8); padding:var(--sp-6);
+      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+      border:1px solid var(--glass-border);
+      border-left:3px solid var(--cyan);
+      border-radius:var(--r-lg);
+    }
+    .founder-note .note-label { font-family:var(--font-display); font-size:9px; letter-spacing:.14em; color:var(--cyan); margin-bottom:var(--sp-3); text-transform:uppercase; }
+    .founder-note p { font-size:14px; color:var(--text-secondary); line-height:1.7; }
+
+    /* ============================================================
+       FINAL CTA
+    ============================================================ */
+    #cta {
+      padding: var(--sp-24) 0;
+      position:relative; overflow:hidden;
+    }
+    /* Large glow orb behind CTA */
+    #cta::before {
+      content:''; position:absolute;
+      width:700px; height:700px; border-radius:50%;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.10) 0%, transparent 65%);
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      pointer-events:none;
+    }
+    .cta-wrap { position:relative; z-index:1; text-align:center; max-width:720px; margin:0 auto; }
+
+    .cta-headline {
+      font-family:var(--font-display);
+      font-size:clamp(26px,4.5vw,52px);
+      font-weight:900; letter-spacing:.05em; text-transform:uppercase;
+      line-height:1.15; margin-bottom:var(--sp-6);
+      background: linear-gradient(135deg, #FFFFFF 0%, #A8D8FF 40%, #00D4FF 80%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .cta-body { font-size:17px; line-height:1.8; color:var(--text-secondary); margin-bottom:var(--sp-10); }
+    .cta-stack { display:flex; flex-direction:column; align-items:center; gap:var(--sp-4); }
+    .cta-secondary { font-size:14px; color:var(--text-muted); text-decoration:underline; text-underline-offset:3px; }
+    .cta-secondary:hover { color:var(--cyan); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    #footer {
+      border-top:1px solid var(--glass-border);
+      padding:var(--sp-12) 0;
+      background: rgba(4,8,15,0.80);
+      backdrop-filter: var(--glass-blur-heavy);
+    }
+    .footer-inner { display:flex; flex-direction:column; align-items:center; gap:var(--sp-6); text-align:center; }
+    .footer-links { display:flex; gap:var(--sp-6); flex-wrap:wrap; justify-content:center; list-style:none; }
+    .footer-links a { font-family:var(--font-display); font-size:10px; letter-spacing:.10em; color:var(--text-muted); }
+    .footer-links a:hover { color:var(--text-primary); }
+    .footer-copy { font-family:var(--font-data); font-size:12px; color:var(--text-muted); }
+    .footer-tagline { font-size:13px; color:var(--text-muted); max-width:480px; }
+
+    /* ============================================================
+       UTILITIES
+    ============================================================ */
+    .tc  { text-align:center; }
+    .mb-4  { margin-bottom:var(--sp-4); }
+    .mb-5  { margin-bottom:var(--sp-5); }
+    .mb-6  { margin-bottom:var(--sp-6); }
+    .mb-8  { margin-bottom:var(--sp-8); }
+    .mb-10 { margin-bottom:var(--sp-10); }
+    .mb-12 { margin-bottom:var(--sp-12); }
+    .mt-6  { margin-top:var(--sp-6); }
+    .mt-8  { margin-top:var(--sp-8); }
+    .text-cyan    { color:var(--cyan); }
+    .text-muted   { color:var(--text-muted); }
+    .text-success { color:var(--success); }
+    .text-alert   { color:var(--alert-text); }
+
+    /* Scroll reveal (JS-driven) */
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity 500ms ease, transform 500ms ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ NAV -->
+<nav id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">RAIN<span>MACHINE</span></a>
+      <ul class="nav-links">
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#markets">Markets</a></li>
+        <li><a href="#proof">Results</a></li>
+      </ul>
+      <a href="#cta" class="btn btn-primary btn-sm">CLAIM YOUR MARKET</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================ HERO -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="scanline"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        For Real Estate Team Leaders Running 5–30 Agents
+      </div>
+
+      <h1 class="hero-h1">
+        Your Team Closes Deals.<br>Your System Should Find Them.
+      </h1>
+
+      <p class="hero-sub">
+        RainMachine is the AI-powered acquisition platform that follows up on every lead
+        within 60 seconds, routes them to the right agent automatically, and keeps working
+        while you sleep — so you can stop managing leads and start running a business.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#cta" class="btn btn-primary btn-lg btn-pulse">
+          CLAIM YOUR MARKET
+          <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+        </a>
+        <a href="#how" class="btn btn-glass btn-lg">SEE HOW IT WORKS</a>
+      </div>
+      <p class="hero-cta-note">One team per market. Strategy call, no obligation.</p>
+
+      <div class="trust-bar">
+        <div class="trust-item"><span class="trust-dot"></span><span class="trust-text">$3M–$20M GCI teams</span></div>
+        <span class="trust-sep">·</span>
+        <div class="trust-item"><span class="trust-dot"></span><span class="trust-text">Leads contacted &lt; 60 sec</span></div>
+        <span class="trust-sep">·</span>
+        <div class="trust-item"><span class="trust-dot"></span><span class="trust-text">14-day appointment guarantee</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ METRICS ROW -->
+<div id="trust-row">
+  <div class="container">
+    <div class="metrics-grid">
+      <div class="metric-tile reveal"><div class="metric-value">&lt; 60</div><div class="metric-label">Seconds</div><div class="metric-sub">Avg AI response to new leads</div></div>
+      <div class="metric-tile reveal"><div class="metric-value">89%</div><div class="metric-label">Contact Rate</div><div class="metric-sub">Every lead reached, every source</div></div>
+      <div class="metric-tile reveal"><div class="metric-value">14</div><div class="metric-label">Day Guarantee</div><div class="metric-sub">Appointments or next month free</div></div>
+      <div class="metric-tile reveal"><div class="metric-value">1</div><div class="metric-label">Team / Market</div><div class="metric-sub">Exclusive access, per market</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="label-pill label-pill--alert"><i data-lucide="alert-triangle" style="width:11px;height:11px;"></i> The Problem</div>
+    <h2 class="section-headline">
+      You Built a Team to Multiply Your Production.<br>Not to Babysit Your CRM at Midnight.
+    </h2>
+    <p class="section-sub">
+      You're spending $5,000–$15,000 a month on lead generation. You have a CRM, you have agents —
+      and you're still manually routing leads at midnight, texting agents to follow up, and watching
+      your best producer get recruited away by a team with "better systems." This isn't a people problem.
+      It's an infrastructure problem.
+    </p>
+
+    <div class="pain-cards">
+      <div class="pain-card reveal">
+        <div class="pain-stat">80%</div>
+        <div class="pain-title">Leads Going Cold</div>
+        <div class="pain-body">80% less likely to convert after 5 minutes of no contact. Most teams respond in hours — or not at all.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-stat">300K+</div>
+        <div class="pain-title">Agents Left RE in 2026</div>
+        <div class="pain-body">Top producers aren't leaving for better splits. They're leaving for better infrastructure. If yours isn't there, someone else's is.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-stat">$0</div>
+        <div class="pain-title">Vendor Accountability</div>
+        <div class="pain-body">Ad agencies send reports. CRMs track activity. Neither is accountable for what actually matters: appointments on the calendar.</div>
+      </div>
+    </div>
+
+    <p class="problem-sub">
+      There's a reason the best teams in every market don't manage leads manually.
+      Let us show you what their infrastructure looks like.
+    </p>
+    <a href="#cta" class="btn btn-outline-cyan">
+      STOP ROUTING LEADS MANUALLY <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================================ SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="zap" style="width:11px;height:11px;"></i> The Solution</div>
+    <h2 class="section-headline">Meet RainMachine.<br>The Acquisition Machine Built for Team Leaders.</h2>
+    <p class="section-sub">
+      RainMachine is not a CRM. It's the infrastructure layer that makes your CRM work — automatically.
+      A lead comes in at 2am. Before you wake up, the AI has called them, qualified them, and booked an
+      appointment on your agent's calendar. You wake up, check the dashboard, read the summary. That's it.
+    </p>
+    <div class="three-part">
+      <div class="three-card reveal">
+        <div class="three-icon"><i data-lucide="mic" style="width:20px;height:20px;"></i></div>
+        <div class="three-title">AI Voice Follow-Up</div>
+        <div class="three-body">Every lead contacted within 60 seconds — 24/7, qualified, sounds human. Even at 2am. Even on Sunday.</div>
+      </div>
+      <div class="three-card reveal">
+        <div class="three-icon"><i data-lucide="git-branch" style="width:20px;height:20px;"></i></div>
+        <div class="three-title">Smart Agent Routing</div>
+        <div class="three-body">Leads go to the right agent based on type, territory, and availability. No overlap. No resentment. No routing debates.</div>
+      </div>
+      <div class="three-card reveal">
+        <div class="three-icon"><i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i></div>
+        <div class="three-title">Live Command Center</div>
+        <div class="three-body">One dashboard shows every lead, every agent, every status — always live. You see everything. You touch nothing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BENTO FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="grid" style="width:11px;height:11px;"></i> What RainMachine Does</div>
+    <h2 class="section-headline mb-10">Everything a Team Leader Needs.<br>Nothing They Have to Manage.</h2>
+
+    <div class="bento">
+      <!-- Large: AI speed stat -->
+      <div class="bento-card bento-wide reveal">
+        <div class="bento-icon"><i data-lucide="zap" style="width:22px;height:22px;"></i></div>
+        <div class="bento-stat">&lt; 60s</div>
+        <div class="bento-title">AI Lead Response — Every Time</div>
+        <div class="bento-body">Every lead from every source is contacted within 60 seconds by our AI voice agent. Qualified. Personalized. Human-sounding. Even at 2am. Even on Sunday. Your pipeline never goes cold because no one was around to call.</div>
+      </div>
+
+      <!-- Small: Routing -->
+      <div class="bento-card reveal">
+        <div class="bento-icon"><i data-lucide="git-branch" style="width:20px;height:20px;"></i></div>
+        <div class="bento-title">Intelligent Routing</div>
+        <div class="bento-body">Buyer/seller type, territory, agent availability. The right lead to the right agent. No overlap. No politics.</div>
+      </div>
+
+      <!-- Small: Claude AI -->
+      <div class="bento-card reveal">
+        <div class="bento-icon"><i data-lucide="bar-chart-2" style="width:20px;height:20px;"></i></div>
+        <div class="bento-title">Weekly AI Intelligence</div>
+        <div class="bento-body">Every Monday: what's working, what to cut, what to scale. Generated by Claude AI from your live data. Delivered to your inbox.</div>
+      </div>
+
+      <!-- Large: Dashboard -->
+      <div class="bento-card bento-wide reveal">
+        <div class="bento-icon"><i data-lucide="layout-dashboard" style="width:22px;height:22px;"></i></div>
+        <div class="bento-title">Your Command Center</div>
+        <div class="bento-body">One dashboard shows the entire operation — lead sources, agent pipelines, appointment rates, campaign performance. Read it in 90 seconds. Change nothing unless you want to. This is what running a business feels like.</div>
+      </div>
+
+      <!-- Small: Rainmaker Leads -->
+      <div class="bento-card reveal">
+        <div class="bento-icon"><i data-lucide="trending-up" style="width:20px;height:20px;"></i></div>
+        <div class="bento-title">Done-For-You Ads</div>
+        <div class="bento-body">We build and manage your Meta and Google campaigns. Qualified leads flow directly into RainMachine — no ad account management required.</div>
+        <div class="bento-badge">Growth &amp; Scale plans</div>
+      </div>
+
+      <!-- Small: GHL -->
+      <div class="bento-card reveal">
+        <div class="bento-icon"><i data-lucide="layers" style="width:20px;height:20px;"></i></div>
+        <div class="bento-title">Built on GoHighLevel</div>
+        <div class="bento-body">RainMachine runs on top of your existing GHL setup. No migration. No starting over. Your workflows, upgraded.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="label-pill tc" style="display:flex;justify-content:center;"><i data-lucide="map" style="width:11px;height:11px;"></i> How It Works</div>
+    <h2 class="section-headline tc mb-12">Three Steps to a Self-Running Pipeline.</h2>
+
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num step-num--1">01</div>
+        <div class="step-label">Step One</div>
+        <div class="step-title">Launch Your Machine</div>
+        <div class="step-body">We configure your RainMachine platform — AI voice agents, routing rules, agent dashboards, GHL integration. White-glove setup. You review, not build.</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num step-num--2">02</div>
+        <div class="step-label">Step Two</div>
+        <div class="step-title">Turn On the Fuel</div>
+        <div class="step-body">Activate Rainmaker Leads. We build and manage your campaigns. Qualified leads flow in, contacted by AI in 60 seconds, routed to your agents automatically.</div>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num step-num--3">03</div>
+        <div class="step-label">Step Three</div>
+        <div class="step-title">Read the Summary</div>
+        <div class="step-body">Wake up to a live dashboard. Overnight activity, appointments booked, agent pipeline status — all there. Every Monday: your Claude AI weekly intelligence report.</div>
+      </div>
+    </div>
+
+    <div class="how-close reveal">
+      <strong>"I made coffee and read the summary."</strong> — That's the goal. That's the whole thing.
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ GATE MECHANIC -->
+<section id="gate">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="lock" style="width:11px;height:11px;"></i> Why RainMachine Exists</div>
+    <div class="gate-grid">
+      <div>
+        <h2 class="section-headline">Rainmaker Leads Are Jet Fuel.<br>You Can't Put Jet Fuel in a Toyota.</h2>
+        <p class="section-sub">
+          Rainmaker Leads are high-intent, qualified leads from campaigns we build and manage specifically
+          for your market. They're generated to be worked by an AI system that responds in 60 seconds,
+          qualifies on the first call, and routes to a trained agent with full context.
+          <br><br>
+          Running those leads through a standard CRM wastes them. And wastes your money. RainMachine is
+          the jet. Rainmaker Leads is the fuel. The fuel only goes into the jet.
+        </p>
+        <a href="#cta" class="btn btn-outline-cyan">
+          SEE WHAT RAINMACHINE DOES IN YOUR MARKET <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </a>
+      </div>
+      <div class="comparison-stack">
+        <div class="cmp-row cmp-row--bad reveal">
+          <span class="cmp-icon cmp-icon--bad">✕</span>
+          <div class="cmp-text"><strong>Generic CRM + Rainmaker Leads</strong><br>Expensive leads. Manual follow-up. No routing. Your ad spend disappears into a nurture bucket nobody works.</div>
+        </div>
+        <div class="cmp-row cmp-row--good reveal">
+          <span class="cmp-icon cmp-icon--good">✓</span>
+          <div class="cmp-text"><strong>RainMachine + Rainmaker Leads</strong><br>60-second AI response. Smart routing. Live dashboard. Appointments on your agents' calendars by morning.</div>
+        </div>
+        <div class="cmp-row cmp-row--good reveal">
+          <span class="cmp-icon cmp-icon--good">✓</span>
+          <div class="cmp-text"><strong>Market Exclusivity Included</strong><br>One team per market. Once locked, no competitor can access Rainmaker Leads in your area — at any price.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SOCIAL PROOF -->
+<section id="proof">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="users" style="width:11px;height:11px;"></i> Results</div>
+    <h2 class="section-headline mb-10">Team Leaders Who Stopped Managing Leads<br>and Started Running Businesses.</h2>
+
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="quote-mark">"</div>
+        <p class="testi-quote">"I was spending $11,000 a month on leads and personally routing them at 11pm every night. Within the first week, I got a text that the AI had already called a new lead and booked an appointment — while I was at my daughter's soccer game. That was the moment I understood what a system actually means."</p>
+        <div class="testi-author"><div class="author-avatar">TL</div><div class="author-status"></div><div><div class="author-name">[Team Leader Name]</div><div class="author-detail">[Market] · [X]-agent team</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="quote-mark">"</div>
+        <p class="testi-quote">"I almost lost my top producer last year. I signed up for RainMachine, showed him the dashboard, walked him through the AI follow-up. He didn't just stay — two agents from that other team joined us instead."</p>
+        <div class="testi-author"><div class="author-avatar">TO</div><div class="author-status"></div><div><div class="author-name">[Team Owner Name]</div><div class="author-detail">[Market] · [X]-agent team</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="quote-mark">"</div>
+        <p class="testi-quote">"I started with the $1,500 Database Revival. We booked 11 appointments in 9 days. Three closed — $38,000 in GCI from leads I'd already paid for and written off. I signed up for Growth before the DBR even finished."</p>
+        <div class="testi-author"><div class="author-avatar">RL</div><div class="author-status"></div><div><div class="author-name">[Realtor Name]</div><div class="author-detail">[Market] · Team Leader</div></div></div>
+      </div>
+    </div>
+    <p class="tc" style="font-size:12px;color:var(--text-muted);">Replace with real client names, photos, and verified results before launch.</p>
+  </div>
+</section>
+
+<!-- ============================================================ MARKET EXCLUSIVITY -->
+<section id="markets">
+  <div class="container">
+    <div class="label-pill label-pill--alert"><i data-lucide="map-pin" style="width:11px;height:11px;"></i> Your Market</div>
+    <div class="market-section-grid">
+      <div>
+        <h2 class="section-headline">One Team Per Market.<br>Yours Is Either Locked or Open.</h2>
+        <p class="section-sub">
+          Every market gets one set of Rainmaker Leads. One team. One exclusive pipeline.
+          When a team leader in your market locks it — your competition can't buy their way in, at any price.
+          <br><br>
+          The team that locks your market before you do isn't a hypothetical. They're evaluating this right now.
+        </p>
+        <a href="#cta" class="btn btn-primary mb-6">
+          CHECK YOUR MARKET <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+        </a>
+        <p class="mt-6" style="font-size:13px;color:var(--text-muted);">Book a strategy call. We'll check live — no forms, no waiting.</p>
+      </div>
+      <div class="market-panel reveal">
+        <div class="market-panel-title">MARKETS — CURRENT STATUS</div>
+        <div class="market-row"><span class="market-dot market-dot--locked"></span><span class="market-name">Dallas-Fort Worth, TX</span><span class="market-status market-status--locked">LOCKED</span></div>
+        <div class="market-row"><span class="market-dot market-dot--locked"></span><span class="market-name">Charlotte, NC</span><span class="market-status market-status--locked">LOCKED</span></div>
+        <div class="market-row"><span class="market-dot market-dot--locked"></span><span class="market-name">Nashville, TN</span><span class="market-status market-status--locked">LOCKED</span></div>
+        <div class="market-row"><span class="market-dot market-dot--open"></span><span class="market-name">Denver, CO</span><span class="market-status market-status--open">OPEN</span></div>
+        <div class="market-row"><span class="market-dot market-dot--open"></span><span class="market-name">Atlanta, GA</span><span class="market-status market-status--open">OPEN</span></div>
+        <div class="market-row"><span class="market-dot market-dot--open"></span><span class="market-name">Phoenix, AZ</span><span class="market-status market-status--open">OPEN</span></div>
+        <div class="market-row" style="opacity:.5;"><span class="market-dot market-dot--open"></span><span class="market-name" style="color:var(--text-muted);">Your Market?</span><span class="market-status market-status--open">CHECK →</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="dollar-sign" style="width:11px;height:11px;"></i> Investment</div>
+    <h2 class="section-headline mb-5">Start Where You Are. Scale When You're Ready.</h2>
+    <p class="section-sub mb-12">Every plan starts with a strategy call — so we build the right setup for your team, your market, and your growth goals.</p>
+
+    <div class="pricing-grid">
+      <!-- DBR -->
+      <div class="p-card p-card--dbr reveal">
+        <div class="p-tier" style="color:var(--warning);">START HERE — ZERO RISK</div>
+        <div class="p-price" style="margin-top:var(--sp-2);">$1,500 <span>one-time</span></div>
+        <div class="p-tier">Database Revival</div>
+        <div class="p-desc">Not ready to commit? See ROI first. AI reactivates your dead database and books qualified appointments — from leads you already paid for.</div>
+        <div class="p-divider"></div>
+        <ul class="p-features">
+          <li>AI reactivation of your existing leads</li>
+          <li>Appointments booked to agents' calendars</li>
+          <li>Typically 5–15 appts in 14 days</li>
+          <li>No subscription required</li>
+          <li>Avg recovered GCI: $12K–$38K</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline-cyan p-cta" style="border-color:var(--border-warning);color:var(--warning);">WAKE UP MY DEAD LEADS →</a>
+      </div>
+
+      <!-- Starter -->
+      <div class="p-card reveal">
+        <div class="p-tier">Starter</div>
+        <div class="p-price">$997 <span>/mo</span></div>
+        <div class="p-desc">Best for: Teams proving ROI with your top 5 agents first before full rollout.</div>
+        <div class="p-divider"></div>
+        <ul class="p-features">
+          <li>Platform — up to 5 agent seats</li>
+          <li>AI voice follow-up (60-sec response)</li>
+          <li>Lead routing — round robin, type, buyer/seller</li>
+          <li>Custom GHL dashboard</li>
+          <li>Claude AI weekly reporting</li>
+          <li>+ Rainmaker Leads Meta (add-on)</li>
+        </ul>
+        <a href="#cta" class="btn btn-glass p-cta">START WITH STARTER →</a>
+      </div>
+
+      <!-- Growth (featured) -->
+      <div class="p-card p-card--featured reveal">
+        <div class="p-badge">MOST POPULAR</div>
+        <div class="p-tier">Growth</div>
+        <div class="p-price">$4,997 <span>/mo</span></div>
+        <div class="p-desc">Best for: Team leaders ready to feed every agent a full pipeline and run ads simultaneously. The complete machine.</div>
+        <div class="p-divider"></div>
+        <ul class="p-features">
+          <li>Everything in Starter — unlimited seats</li>
+          <li>Rainmaker Leads — Meta + Google (DFY)</li>
+          <li>Market exclusivity — your market locked</li>
+          <li>Advanced n8n workflows</li>
+          <li>Dedicated Slack channel</li>
+          <li>Monthly strategy call</li>
+        </ul>
+        <div class="p-math">10 agents × $300/mo = $3,000 from your team<br>Net cost: $1,997/mo for the complete machine</div>
+        <a href="#cta" class="btn btn-primary p-cta">CLAIM GROWTH →</a>
+        <p class="tc mt-6" style="font-size:12px;color:var(--text-muted);">One team per market.</p>
+      </div>
+
+      <!-- Scale -->
+      <div class="p-card reveal">
+        <div class="p-tier">Scale</div>
+        <div class="p-price">$9,997 <span>/mo</span></div>
+        <div class="p-desc">Best for: High-volume teams operating across multiple markets or verticals.</div>
+        <div class="p-divider"></div>
+        <ul class="p-features">
+          <li>Everything in Growth — multi-market</li>
+          <li>All channels: Meta + Google + YouTube + TikTok</li>
+          <li>DBR campaign included at start</li>
+          <li>Full multi-market exclusivity</li>
+          <li>White-glove onboarding call</li>
+        </ul>
+        <a href="#cta" class="btn btn-glass p-cta">BOOK A SCALE CALL →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ GUARANTEE -->
+<section id="guarantee">
+  <div class="container">
+    <div class="guarantee-panel reveal">
+      <div class="guarantee-icon"><i data-lucide="shield-check" style="width:32px;height:32px;"></i></div>
+      <div class="label-pill label-pill--success" style="display:inline-flex;margin-bottom:var(--sp-5);">Our Guarantee</div>
+      <h2 class="g-headline">Appointments on Your Calendar in 14 Days.<br>Or Your Next Month Is Free.</h2>
+      <p class="g-body">
+        We don't measure success by leads contacted. We measure it by appointments booked.
+        <br><br>
+        If your team doesn't have real, qualified appointments on the calendar within 14 days of launch,
+        your <strong style="color:var(--success);">next month is free</strong> — not a credit, not a "we'll make it right" conversation.
+        Your next month free, because we missed. That's the standard we hold ourselves to.
+      </p>
+      <a href="#cta" class="btn btn-primary btn-lg">
+        BOOK WITH CONFIDENCE <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="help-circle" style="width:11px;height:11px;"></i> Questions</div>
+    <h2 class="section-headline mb-10">Still Have Questions?<br>Good. Here Are the Real Answers.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"It's just another CRM."</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">RainMachine is not a CRM. It's the infrastructure layer that makes your CRM actually work. Most CRMs give you a place to store leads and expect agents to do the rest. RainMachine is the automation layer — AI that contacts leads in 60 seconds, routing logic, live dashboards, and AI reporting. A CRM is a tool. RainMachine is a machine. One requires daily input. The other runs overnight.</div>
+      </div>
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"I'll still have to build everything myself."</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">You won't. We configure it. When you sign up, we set up routing rules, build AI follow-up sequences, configure your GHL integration, and connect your ad accounts. Your job on week one: answer onboarding questions, review the setup, confirm your agent roster. That's it.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"The AI won't actually book real appointments."</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">Fair skepticism. Start with a $1,500 Database Revival. We run AI against your existing dead lead database — people who filled out a form and never converted. Most teams book 5–15 qualified appointments in 14 days from leads they'd already written off. That's the proof of concept — and it pays for itself before you commit to anything else.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"I've been burned by vendors. What happens when this doesn't work?"</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">We have skin in the game. No appointments in 14 days of launch, your next month is free. Not a credit. Not a partial refund. Your next month free — because we missed. That's how we structure the engagement.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"Why do I need RainMachine to access Rainmaker Leads?"</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">Rainmaker Leads are generated to be worked by an AI system that responds in 60 seconds, qualifies on the first call, and routes to a trained agent with full context. Running them through a standard CRM wastes them. RainMachine is the jet. Rainmaker Leads is the fuel. The fuel only works in the right vehicle.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">"What does market exclusivity actually mean?"</span>
+          <i data-lucide="chevron-down" class="faq-chevron" style="width:18px;height:18px;"></i>
+        </button>
+        <div class="faq-a">One team per metro market per ad channel. If your market is open and you sign up, no other team in your market gets access on that channel. If your market is already taken, you can't unlock Rainmaker Leads for that area — even if you're on the platform. This is a hard business rule, not a soft preference.</div>
+      </div>
+    </div>
+
+    <div class="faq-cta-wrap">
+      <div class="faq-note">Still have questions?</div>
+      <a href="#cta" class="btn btn-primary">
+        BOOK A STRATEGY CALL — WE'LL ANSWER EVERYTHING <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+      </a>
+      <p class="mt-6" style="font-size:13px;color:var(--text-muted);">30 minutes. Free. No hard sell.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FOUNDER -->
+<section id="founder">
+  <div class="container">
+    <div class="label-pill"><i data-lucide="user" style="width:11px;height:11px;"></i> Why This Exists</div>
+    <div class="founder-grid">
+      <div>
+        <h2 class="section-headline">Built by Someone Who Needed It.</h2>
+        <p class="section-sub">
+          Shomari Williams didn't build RainMachine from a software background. He built it because he
+          was running client acquisition operations for real estate teams and couldn't find a single platform
+          that connected lead generation, AI follow-up, and team management — end to end, with real accountability.
+          So he built it.
+          <br><br>
+          Every feature exists because someone needed it in production. The AI voice agent. The market exclusivity.
+          The command center dashboard. The Claude AI weekly report. All of it came from running the operation —
+          not designing it in a boardroom.
+        </p>
+        <div class="founder-note">
+          <div class="note-label">Platform</div>
+          <p>Built on GoHighLevel. Powered by Retell AI and Claude API. Integrated with Meta Ads and Google Ads APIs. Deployed on Vercel. Every component is production-tested — not demo-ready.</p>
+        </div>
+      </div>
+      <div>
+        <div class="founder-stats">
+          <div class="f-stat reveal"><div class="f-stat-val">89%</div><div class="f-stat-label">Top agents using AI tools by 2026</div></div>
+          <div class="f-stat reveal"><div class="f-stat-val">8×</div><div class="f-stat-label">More likely to convert with &lt;5 min response</div></div>
+          <div class="f-stat reveal"><div class="f-stat-val">$15B</div><div class="f-stat-label">RE CRM market by 2035 (12.2% CAGR)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FINAL CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-wrap">
+      <div class="label-pill" style="display:inline-flex;margin-bottom:var(--sp-6);"><i data-lucide="map-pin" style="width:11px;height:11px;"></i> Your Market</div>
+      <h2 class="cta-headline">Your Market Is Either Locked<br>or Open. Find Out Now.</h2>
+      <p class="cta-body">
+        One team per market gets access to Rainmaker Leads. Book a strategy call and we'll check your
+        market availability live — no forms, no waiting, no pressure. If your market is open, we'll map
+        exactly what RainMachine looks like for your team, your budget, and your growth goals.
+      </p>
+      <div class="cta-stack">
+        <a href="https://makeitraindigital.com/strategy-call" class="btn btn-primary btn-lg btn-pulse">
+          CLAIM YOUR MARKET <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+        </a>
+        <a href="#pricing" class="cta-secondary">Or start with a $1,500 Database Revival — see results in 14 days first →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FOOTER -->
+<footer id="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#hero" class="nav-logo">RAIN<span>MACHINE</span></a>
+      <ul class="footer-links">
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#markets">Markets</a></li>
+        <li><a href="#proof">Results</a></li>
+        <li><a href="#cta">Strategy Call</a></li>
+        <li><a href="https://rainmachine.io">rainmachine.io</a></li>
+      </ul>
+      <p class="footer-tagline">For real estate team leaders running 5–30 agents. One team per market. AI-powered acquisition. Built on GoHighLevel.</p>
+      <p class="footer-copy">© 2026 Make It Rain Digital. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================ SCRIPTS -->
+<script>
+  lucide.createIcons();
+
+  function toggleFaq(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+
+  // Sticky nav hide/show on scroll
+  let lastY = 0;
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    lastY = y;
+  });
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Immediately reveal elements already in viewport on load
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 1.05) el.classList.add('visible');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StatusDot > renders at-risk status 1`] = `
+<span
+  aria-label="at-risk"
+  class="relative inline-flex"
+  data-testid="dot-at-risk"
+>
+  <span
+    class="rounded-full bg-orange w-2 h-2"
+  />
+</span>
+`;
+
+exports[`StatusDot > renders offline status 1`] = `
+<span
+  aria-label="offline"
+  class="relative inline-flex"
+  data-testid="dot-offline"
+>
+  <span
+    class="rounded-full bg-red w-2 h-2"
+  />
+</span>
+`;
+
+exports[`StatusDot > renders online status 1`] = `
+<span
+  aria-label="online"
+  class="relative inline-flex"
+  data-testid="dot-online"
+>
+  <span
+    class="rounded-full bg-green w-2 h-2"
+  />
+</span>
+`;
+
+exports[`StatusDot > renders processing status 1`] = `
+<span
+  aria-label="processing"
+  class="relative inline-flex"
+  data-testid="dot-processing"
+>
+  <span
+    class="rounded-full bg-cyan animate-pulse w-2 h-2"
+  />
+</span>
+`;
+
+exports[`StatusDot > renders standby status 1`] = `
+<span
+  aria-label="standby"
+  class="relative inline-flex"
+  data-testid="dot-standby"
+>
+  <span
+    class="rounded-full bg-text-dim w-2 h-2"
+  />
+</span>
+`;

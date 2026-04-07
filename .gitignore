@@ -1,0 +1,34 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+.next/
+dist/
+build/
+out/
+
+# Turborepo cache
+.turbo/
+
+# Testing
+playwright-report/
+test-results/
+
+# Misc
+node_modules/
+.DS_Store
+
+# pnpm
+pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Supabase
+supabase/.branches
+supabase/.temp

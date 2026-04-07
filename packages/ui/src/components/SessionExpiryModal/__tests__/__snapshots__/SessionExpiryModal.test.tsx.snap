@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SessionExpiryModal > renders when open 1`] = `
+<div
+  class="fixed inset-0 z-40 flex items-center justify-center"
+>
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 bg-background/80 backdrop-blur-sm"
+  />
+  <div
+    aria-labelledby="modal-title"
+    aria-modal="true"
+    class="relative z-50 w-full rounded-lg bg-surface border border-border shadow-card animate-slide-up p-6 mx-4 max-w-sm"
+    role="dialog"
+  >
+    <h2
+      class="font-display text-sm uppercase tracking-widest text-text mb-4"
+      id="modal-title"
+    >
+      SESSION EXPIRED
+    </h2>
+    <div
+      class="flex flex-col gap-6"
+    >
+      <p
+        class="font-body text-sm text-text-muted"
+      >
+        Your session has timed out. Please log in again to continue.
+      </p>
+      <div
+        class="flex gap-3 justify-end"
+      >
+        <button
+          class="font-display text-xs uppercase tracking-widest text-text-muted hover:text-text transition-colors px-3 py-2"
+          data-testid="session-logout-button"
+        >
+          LOG OUT
+        </button>
+        <button
+          class="font-display text-xs uppercase tracking-widest bg-cyan text-background px-4 py-2 rounded hover:opacity-90 transition-opacity"
+          data-testid="session-refresh-button"
+        >
+          REFRESH SESSION
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

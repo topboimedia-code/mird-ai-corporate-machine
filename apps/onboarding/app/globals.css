@@ -1,0 +1,15 @@
+/* globals.css — F01 minimal reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: #050d1a;
+  color: #e8f4fd;
+}

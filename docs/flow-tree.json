@@ -1,0 +1,1570 @@
+{
+  "version": "1.0",
+  "date": "2026-03-29",
+  "project": "Make It Rain Digital — MIRD AI Corporate Machine",
+  "apps": [
+    {
+      "id": "rainmachine-dashboard",
+      "name": "RainMachine Dashboard",
+      "platform": "web",
+      "primaryUser": "Marcus — Realtor Team Leader + Agents",
+      "urlBase": "dashboard.makeitrain.digital",
+      "deviceSupport": "desktop-first, mobile-responsive",
+      "totalScreens": 52,
+      "flows": [
+        {
+          "id": "auth",
+          "name": "Authentication",
+          "screens": [
+            {
+              "id": "rm-auth-login-main",
+              "name": "Login",
+              "description": "Primary login screen for Marcus and agents to authenticate into the RainMachine Dashboard.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "medium",
+              "entryPoints": ["direct-url", "session-expiry-redirect", "logout-redirect", "password-reset-success-redirect"],
+              "exitPoints": ["rm-dashboard-home-main", "rm-auth-forgot-password-main", "rm-auth-login-error"],
+              "dataRequirements": ["email-input", "password-input", "auth-token-response", "user-profile-stub"],
+              "states": ["default", "loading", "error"]
+            },
+            {
+              "id": "rm-auth-login-error",
+              "name": "Login Error",
+              "description": "Login screen displaying inline error after failed authentication attempt.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-auth-login-main"],
+              "exitPoints": ["rm-auth-login-main", "rm-auth-forgot-password-main"],
+              "dataRequirements": ["error-code", "attempt-count"],
+              "states": ["invalid-credentials", "account-locked", "service-unavailable"]
+            },
+            {
+              "id": "rm-auth-forgot-password-main",
+              "name": "Forgot Password",
+              "description": "Email input screen for initiating a password reset.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-auth-login-main", "rm-auth-login-error"],
+              "exitPoints": ["rm-auth-forgot-password-confirmation", "rm-auth-login-main"],
+              "dataRequirements": ["email-input", "user-record-lookup"],
+              "states": ["default", "loading", "error"]
+            },
+            {
+              "id": "rm-auth-forgot-password-confirmation",
+              "name": "Password Reset Email Sent",
+              "description": "Confirmation screen shown after reset email is dispatched.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-auth-forgot-password-main"],
+              "exitPoints": ["rm-auth-login-main"],
+              "dataRequirements": ["masked-email-address"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-auth-password-reset-form",
+              "name": "Set New Password",
+              "description": "Form for entering and confirming a new password, accessed via the reset link in email.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["password-reset-email-link-token-gated"],
+              "exitPoints": ["rm-auth-password-reset-success", "rm-auth-login-main"],
+              "dataRequirements": ["reset-token", "password-strength-rules"],
+              "states": ["default", "loading", "mismatch-error", "token-expired"]
+            },
+            {
+              "id": "rm-auth-password-reset-success",
+              "name": "Password Updated",
+              "description": "Success confirmation after a password has been successfully reset. Auto-redirects to login after 3s.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-auth-password-reset-form"],
+              "exitPoints": ["rm-auth-login-main"],
+              "dataRequirements": [],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-auth-session-expired",
+              "name": "Session Expired",
+              "description": "Full-screen interstitial shown when the user session token expires mid-use. Auto-redirects to login.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["any-authenticated-screen-token-ttl-exceeded"],
+              "exitPoints": ["rm-auth-login-main"],
+              "dataRequirements": ["session-state", "expiry-timestamp"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "first-time-setup",
+          "name": "First-Time Setup",
+          "screens": [
+            {
+              "id": "rm-onboard-welcome-splash",
+              "name": "Welcome to RainMachine",
+              "description": "First-time user welcome screen shown after initial login before any data is populated.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["rm-auth-login-main-first-login"],
+              "exitPoints": ["rm-onboard-team-setup-main", "rm-dashboard-home-main"],
+              "dataRequirements": ["client-name", "package-tier"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-onboard-team-setup-main",
+              "name": "Team Setup — Add Agents",
+              "description": "Guided step for Marcus to add his agent roster.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-onboard-welcome-splash", "rm-settings-team-main"],
+              "exitPoints": ["rm-onboard-routing-config", "rm-dashboard-home-main"],
+              "dataRequirements": ["agent-name", "agent-email", "agent-phone", "agent-role", "invite-email-trigger"],
+              "states": ["default", "loading", "success", "error"]
+            },
+            {
+              "id": "rm-onboard-routing-config",
+              "name": "Lead Routing Setup",
+              "description": "First-time configuration of lead routing rules.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-onboard-team-setup-main"],
+              "exitPoints": ["rm-onboard-notifications-setup", "rm-dashboard-home-main"],
+              "dataRequirements": ["agent-list", "source-types", "routing-rule-structure"],
+              "states": ["default", "saving"]
+            },
+            {
+              "id": "rm-onboard-notifications-setup",
+              "name": "Notification Preferences",
+              "description": "First-time notification preferences — email vs. SMS.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-onboard-routing-config"],
+              "exitPoints": ["rm-onboard-setup-complete"],
+              "dataRequirements": ["email", "sms-number", "notification-type-toggles"],
+              "states": ["default", "saving"]
+            },
+            {
+              "id": "rm-onboard-setup-complete",
+              "name": "Setup Complete — System Online",
+              "description": "Completion animation transitioning to main dashboard.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["rm-onboard-notifications-setup"],
+              "exitPoints": ["rm-dashboard-home-main"],
+              "dataRequirements": ["onboarding-completion-flag"],
+              "states": ["default", "animating", "redirect"]
+            }
+          ]
+        },
+        {
+          "id": "dashboard",
+          "name": "Main Dashboard",
+          "screens": [
+            {
+              "id": "rm-dashboard-home-main",
+              "name": "RainMachine Dashboard — Home",
+              "description": "Primary 4-quadrant command center: Lead Acquisition, Pipeline, Agent Performance, Campaign Intelligence, plus Claude AI panel.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "complex",
+              "entryPoints": ["sidebar-nav", "login-success-redirect", "rm-onboard-setup-complete"],
+              "exitPoints": ["rm-leads-main", "rm-agents-main", "rm-campaigns-main", "rm-reports-main", "rm-settings-team-main", "rm-leads-detail-panel"],
+              "dataRequirements": ["leads-count-7d", "cpl-7d", "ai-call-success-rate", "pipeline-stage-counts", "agent-performance-summary", "campaign-spend-cpl-roas", "claude-weekly-brief"],
+              "states": ["default", "loading", "empty", "error", "partial-data"]
+            },
+            {
+              "id": "rm-dashboard-home-loading",
+              "name": "Dashboard Loading",
+              "description": "Skeleton shimmer state while dashboard data fetches. Boot sequence animation plays.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["rm-dashboard-home-main-page-load"],
+              "exitPoints": ["rm-dashboard-home-main", "rm-dashboard-home-error"],
+              "dataRequirements": [],
+              "states": ["loading"]
+            },
+            {
+              "id": "rm-dashboard-home-empty",
+              "name": "Dashboard — Awaiting First Data",
+              "description": "Empty state before campaigns go live. Pulsing MIRD logo.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["rm-dashboard-home-loading-campaigns-not-live"],
+              "exitPoints": ["rm-dashboard-home-main", "rm-settings-integrations"],
+              "dataRequirements": ["campaign-live-status", "onboarding-completion-status"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-dashboard-home-error",
+              "name": "Dashboard — Signal Lost",
+              "description": "Error state when data feeds fail. Orange panel borders, SIGNAL LOST labels.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-dashboard-home-loading-fetch-failure"],
+              "exitPoints": ["rm-dashboard-home-main", "rm-settings-integrations"],
+              "dataRequirements": ["api-error-codes", "partial-datasets"],
+              "states": ["partial-error", "full-error"]
+            }
+          ]
+        },
+        {
+          "id": "leads",
+          "name": "Leads",
+          "screens": [
+            {
+              "id": "rm-leads-main",
+              "name": "Lead Acquisition Intelligence",
+              "description": "Full lead list with filter bar, sortable table or card view, pagination.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["sidebar-nav", "rm-dashboard-home-main-panel-cta"],
+              "exitPoints": ["rm-leads-detail-panel", "rm-leads-empty", "rm-leads-filtered-empty"],
+              "dataRequirements": ["lead-list-paginated", "stage", "source", "ai-call-status", "cpl", "last-activity"],
+              "states": ["default", "loading", "filtered", "empty", "filtered-empty"]
+            },
+            {
+              "id": "rm-leads-detail-panel",
+              "name": "Lead Intelligence Panel",
+              "description": "400px right-side slide-in panel with full lead profile, timeline, AI call summary.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-leads-main-row-click"],
+              "exitPoints": ["rm-leads-main", "rm-leads-detail-full", "rm-agents-detail-main", "rm-leads-reassign-modal"],
+              "dataRequirements": ["lead-profile", "timeline-events", "ai-call-transcript-summary", "agent-assignment"],
+              "states": ["default", "loading", "expanded"]
+            },
+            {
+              "id": "rm-leads-detail-full",
+              "name": "Lead Full Profile",
+              "description": "Full-page expanded view of a single lead.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-leads-detail-panel-expand"],
+              "exitPoints": ["rm-leads-main", "rm-leads-detail-call-history", "rm-leads-detail-appointment"],
+              "dataRequirements": ["full-lead-record", "all-call-logs", "transcript-data", "appointment-record"],
+              "states": ["overview-tab", "call-history-tab", "appointment-tab"]
+            },
+            {
+              "id": "rm-leads-detail-call-history",
+              "name": "Lead Call History",
+              "description": "All AI call attempts, outcomes, and full transcripts per connected call.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-leads-detail-full-call-history-tab"],
+              "exitPoints": ["rm-leads-detail-full"],
+              "dataRequirements": ["call-records", "outcomes", "transcripts"],
+              "states": ["default", "expanded-transcript"]
+            },
+            {
+              "id": "rm-leads-detail-appointment",
+              "name": "Lead Appointment Detail",
+              "description": "Appointment date/time, agent, show/no-show outcome, reminder history.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-leads-detail-full-appointment-tab"],
+              "exitPoints": ["rm-leads-detail-full"],
+              "dataRequirements": ["appointment-record", "confirmation-status", "show-no-show-flag"],
+              "states": ["pending", "confirmed", "showed", "no-show"]
+            },
+            {
+              "id": "rm-leads-empty",
+              "name": "Leads — Awaiting Incoming Signals",
+              "description": "Empty state when no leads exist. JARVIS: AWAITING INCOMING SIGNALS.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-leads-main-zero-leads"],
+              "exitPoints": ["rm-leads-main", "rm-settings-integrations"],
+              "dataRequirements": ["lead-count", "campaign-live-status"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-leads-filtered-empty",
+              "name": "Leads — No Filter Results",
+              "description": "Zero results for active filter combination. Reset filters CTA.",
+              "priority": "P2",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-leads-main-active-filters-zero-results"],
+              "exitPoints": ["rm-leads-main"],
+              "dataRequirements": ["active-filter-state"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-leads-reassign-modal",
+              "name": "Reassign Lead Modal",
+              "description": "Modal overlay for reassigning a lead to a different agent.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-leads-detail-panel-reassign", "rm-leads-detail-full-reassign"],
+              "exitPoints": ["rm-leads-detail-panel", "rm-leads-detail-full"],
+              "dataRequirements": ["agent-roster", "current-assignment", "lead-id"],
+              "states": ["default", "loading", "success", "error"]
+            }
+          ]
+        },
+        {
+          "id": "agents",
+          "name": "Agent Performance",
+          "screens": [
+            {
+              "id": "rm-agents-main",
+              "name": "Agent Performance Overview",
+              "description": "Summary bar + 2-column agent panel grid + routing toggle.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["sidebar-nav", "rm-dashboard-home-main-panel-cta"],
+              "exitPoints": ["rm-agents-detail-main", "rm-agents-routing-view", "rm-agents-empty"],
+              "dataRequirements": ["agent-records", "leads-assigned", "leads-contacted", "leads-converted", "conversion-rate", "cpl", "top-source"],
+              "states": ["default", "loading", "routing-view"]
+            },
+            {
+              "id": "rm-agents-routing-view",
+              "name": "Lead Routing Diagram",
+              "description": "Visual flow diagram of lead routing from sources to agents.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-agents-main-toggle"],
+              "exitPoints": ["rm-agents-main", "rm-settings-routing"],
+              "dataRequirements": ["routing-rules", "agent-list", "lead-source-volumes"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-agents-detail-main",
+              "name": "Agent Full Profile",
+              "description": "Full per-agent page: performance metrics, assigned leads, conversion trend, call log.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-agents-main-view-profile", "rm-leads-detail-panel-agent-link"],
+              "exitPoints": ["rm-agents-main", "rm-agents-detail-leads-tab"],
+              "dataRequirements": ["agent-profile", "performance-history", "assigned-leads", "call-log"],
+              "states": ["overview-tab", "leads-tab"]
+            },
+            {
+              "id": "rm-agents-detail-leads-tab",
+              "name": "Agent — Assigned Leads",
+              "description": "All leads assigned to this agent with stage and last activity.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-agents-detail-main-leads-tab"],
+              "exitPoints": ["rm-leads-detail-panel", "rm-agents-detail-main"],
+              "dataRequirements": ["lead-records-filtered-by-agent"],
+              "states": ["default", "empty"]
+            },
+            {
+              "id": "rm-agents-empty",
+              "name": "Agents — No Agents Configured",
+              "description": "Empty state when no agents added yet.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-agents-main-zero-agents"],
+              "exitPoints": ["rm-settings-team-main"],
+              "dataRequirements": ["agent-count"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "campaigns",
+          "name": "Campaign Intelligence",
+          "screens": [
+            {
+              "id": "rm-campaigns-main",
+              "name": "Campaign Intelligence",
+              "description": "Platform switcher, overview panel, campaign table, creative performance grid.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["sidebar-nav", "rm-dashboard-home-main-panel-cta"],
+              "exitPoints": ["rm-campaigns-detail-accordion", "rm-campaigns-creative-detail-modal", "rm-campaigns-empty"],
+              "dataRequirements": ["campaigns-per-platform", "spend-cpl-roas-leads-ctr", "creative-thumbnails-metrics"],
+              "states": ["default", "meta-tab", "google-tab", "all-tab", "loading", "empty", "error"]
+            },
+            {
+              "id": "rm-campaigns-detail-accordion",
+              "name": "Campaign Detail Row",
+              "description": "Inline accordion with 30-day charts and ad set breakdown.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-campaigns-main-row-click"],
+              "exitPoints": ["rm-campaigns-main"],
+              "dataRequirements": ["30-day-campaign-time-series", "ad-set-data"],
+              "states": ["expanded", "collapsed"]
+            },
+            {
+              "id": "rm-campaigns-creative-detail-modal",
+              "name": "Creative Performance Detail",
+              "description": "Full creative metrics in modal overlay.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-campaigns-main-creative-click"],
+              "exitPoints": ["rm-campaigns-main"],
+              "dataRequirements": ["creative-metrics", "full-size-asset"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-campaigns-empty",
+              "name": "Campaigns — No Active Campaigns",
+              "description": "Pre-connection empty state. JARVIS: NO ACTIVE CAMPAIGNS DETECTED.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-campaigns-main-no-ad-accounts"],
+              "exitPoints": ["rm-settings-integrations"],
+              "dataRequirements": ["integration-connection-status"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-campaigns-platform-error",
+              "name": "Campaigns — Platform Signal Lost",
+              "description": "API failure for Meta or Google data. Partial data still shown.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-campaigns-main-api-failure"],
+              "exitPoints": ["rm-campaigns-main", "rm-settings-integrations"],
+              "dataRequirements": ["api-error-code", "partial-platform-data"],
+              "states": ["meta-error", "google-error", "both-error"]
+            }
+          ]
+        },
+        {
+          "id": "ai-reports",
+          "name": "Claude AI Reports",
+          "screens": [
+            {
+              "id": "rm-reports-main",
+              "name": "Intelligence Archive",
+              "description": "60/40 split: report history list (left) + active report or chat (right).",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["sidebar-nav", "rm-dashboard-home-main-claude-cta"],
+              "exitPoints": ["rm-reports-report-view", "rm-reports-empty"],
+              "dataRequirements": ["report-index", "latest-report-content", "chat-history"],
+              "states": ["default", "loading", "empty"]
+            },
+            {
+              "id": "rm-reports-report-view",
+              "name": "Weekly Intelligence Brief",
+              "description": "Full Claude-generated weekly report with metadata and follow-up chat below.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-reports-main-row-click", "rm-dashboard-home-main-read-full-report"],
+              "exitPoints": ["rm-reports-main", "rm-reports-chat-active"],
+              "dataRequirements": ["full-report-text", "generation-metadata", "chat-context"],
+              "states": ["default", "chat-idle", "chat-active"]
+            },
+            {
+              "id": "rm-reports-chat-active",
+              "name": "AI Report Chat",
+              "description": "Chat history + user query + AI response rendered.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-reports-report-view-chat-submit"],
+              "exitPoints": ["rm-reports-report-view", "rm-reports-chat-processing"],
+              "dataRequirements": ["user-query", "ai-response-stream", "conversation-history", "report-context"],
+              "states": ["default", "submitting"]
+            },
+            {
+              "id": "rm-reports-chat-processing",
+              "name": "AI Processing Query",
+              "description": "PROCESSING QUERY pulsing dots while awaiting Claude API response.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-reports-chat-active-query-submitted"],
+              "exitPoints": ["rm-reports-chat-active", "rm-reports-chat-error"],
+              "dataRequirements": ["query-submitted-state"],
+              "states": ["processing"]
+            },
+            {
+              "id": "rm-reports-chat-error",
+              "name": "AI Response Error",
+              "description": "QUERY FAILED inline error with retry option.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-reports-chat-processing-api-failure"],
+              "exitPoints": ["rm-reports-chat-active"],
+              "dataRequirements": ["error-type", "retry-flag"],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-reports-empty",
+              "name": "Intelligence Reports Initializing",
+              "description": "Pre-7-day empty state. INTELLIGENCE REPORTS INITIALIZING.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-reports-main-zero-reports"],
+              "exitPoints": ["rm-reports-main"],
+              "dataRequirements": ["campaign-live-date", "report-generation-schedule"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "settings",
+          "name": "Settings",
+          "screens": [
+            {
+              "id": "rm-settings-team-main",
+              "name": "Settings — Team Management",
+              "description": "Agent roster table with add/edit actions and invite functionality.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["sidebar-nav-settings", "rm-onboard-team-setup-main"],
+              "exitPoints": ["rm-settings-add-agent-modal", "rm-settings-edit-agent-modal", "rm-settings-routing"],
+              "dataRequirements": ["team-roster", "agent-status", "30d-performance-summary"],
+              "states": ["default", "loading"]
+            },
+            {
+              "id": "rm-settings-add-agent-modal",
+              "name": "Add New Agent",
+              "description": "Modal: name, email, phone, role. Triggers invite email.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-settings-team-main-add-button"],
+              "exitPoints": ["rm-settings-team-main"],
+              "dataRequirements": ["name", "email", "phone", "role"],
+              "states": ["default", "loading", "success", "error"]
+            },
+            {
+              "id": "rm-settings-edit-agent-modal",
+              "name": "Edit Agent",
+              "description": "Modal: edit agent name, contact, role, active/inactive status.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["rm-settings-team-main-edit-row"],
+              "exitPoints": ["rm-settings-team-main"],
+              "dataRequirements": ["existing-agent-record"],
+              "states": ["default", "loading", "success", "error"]
+            },
+            {
+              "id": "rm-settings-routing",
+              "name": "Settings — Lead Routing",
+              "description": "Visual rule builder: IF source + condition THEN assign to agent with method. Drag to reorder.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["settings-tab-nav", "rm-onboard-routing-config", "rm-agents-routing-view-edit-cta"],
+              "exitPoints": ["rm-settings-team-main", "rm-settings-notifications"],
+              "dataRequirements": ["routing-rules", "agent-list", "source-types"],
+              "states": ["default", "editing", "saving"]
+            },
+            {
+              "id": "rm-settings-notifications",
+              "name": "Settings — Notifications",
+              "description": "Toggle rows for all notification types with email/SMS/both options.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["settings-tab-nav", "rm-onboard-notifications-setup"],
+              "exitPoints": ["rm-settings-integrations"],
+              "dataRequirements": ["user-notification-preferences", "contact-details"],
+              "states": ["default", "saving"]
+            },
+            {
+              "id": "rm-settings-integrations",
+              "name": "Settings — Integrations",
+              "description": "Platform connection status cards: Meta, Google Ads, GMB, CRM. Last sync, reconnect options.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["settings-tab-nav", "rm-campaigns-empty-cta", "rm-dashboard-home-error-cta"],
+              "exitPoints": ["rm-settings-integrations-meta-reconnect", "rm-settings-integrations-google-reconnect", "rm-settings-account"],
+              "dataRequirements": ["integration-connection-statuses", "last-sync-timestamps"],
+              "states": ["all-connected", "partial-connected", "none-connected"]
+            },
+            {
+              "id": "rm-settings-integrations-meta-reconnect",
+              "name": "Reconnect Meta Ads",
+              "description": "Guided Meta token re-verification flow within settings context.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-settings-integrations-meta-reconnect-button"],
+              "exitPoints": ["rm-settings-integrations"],
+              "dataRequirements": ["meta-token-input", "meta-api-verification"],
+              "states": ["default", "verifying", "success", "error"]
+            },
+            {
+              "id": "rm-settings-integrations-google-reconnect",
+              "name": "Reconnect Google Ads",
+              "description": "Guided Google Ads re-connect flow within settings context.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "medium",
+              "entryPoints": ["rm-settings-integrations-google-reconnect-button"],
+              "exitPoints": ["rm-settings-integrations"],
+              "dataRequirements": ["google-customer-id", "manager-account-invite-status"],
+              "states": ["default", "checking", "success", "error"]
+            },
+            {
+              "id": "rm-settings-account",
+              "name": "Settings — Account & Billing",
+              "description": "Client account details, package tier, invoice history, billing support.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["settings-tab-nav"],
+              "exitPoints": [],
+              "dataRequirements": ["client-account-record", "invoice-history", "contract-details"],
+              "states": ["default", "loading"]
+            }
+          ]
+        },
+        {
+          "id": "global",
+          "name": "Global / System-Level",
+          "screens": [
+            {
+              "id": "rm-global-404",
+              "name": "Page Not Found",
+              "description": "JARVIS-style 404. NAVIGATION TARGET NOT FOUND. Link to dashboard.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["any-broken-url"],
+              "exitPoints": ["rm-dashboard-home-main"],
+              "dataRequirements": [],
+              "states": ["default"]
+            },
+            {
+              "id": "rm-global-500",
+              "name": "System Fault",
+              "description": "SYSTEM FAULT — DIAGNOSTIC IN PROGRESS. Auto-retry with countdown.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["any-5xx-server-response"],
+              "exitPoints": ["rm-dashboard-home-main"],
+              "dataRequirements": ["error-code", "retry-status"],
+              "states": ["default", "retrying", "retry-failed"]
+            },
+            {
+              "id": "rm-global-maintenance",
+              "name": "System Maintenance",
+              "description": "Planned downtime notice with return ETA and contact info.",
+              "priority": "P2",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["maintenance-flag-active"],
+              "exitPoints": ["rm-dashboard-home-main"],
+              "dataRequirements": ["maintenance-window-details", "estimated-return-time"],
+              "states": ["default"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ceo-dashboard",
+      "name": "CEO Dashboard",
+      "platform": "web",
+      "primaryUser": "Shomari Williams — MIRD CEO",
+      "urlBase": "internal.makeitrain.digital/ceo",
+      "deviceSupport": "desktop-only (1024px minimum enforced)",
+      "totalScreens": 28,
+      "flows": [
+        {
+          "id": "auth",
+          "name": "Authentication",
+          "screens": [
+            {
+              "id": "ceo-auth-login-main",
+              "name": "CEO Dashboard Login",
+              "description": "Isolated login for Shomari. High-security context with 2FA.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "medium",
+              "entryPoints": ["direct-url", "session-expiry-redirect"],
+              "exitPoints": ["ceo-command-center-main", "ceo-auth-2fa-prompt", "ceo-auth-login-error"],
+              "dataRequirements": ["email", "password", "2fa-token"],
+              "states": ["default", "loading", "error"]
+            },
+            {
+              "id": "ceo-auth-2fa-prompt",
+              "name": "Two-Factor Authentication",
+              "description": "6-digit 2FA code entry after successful password auth.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-auth-login-main-2fa-required"],
+              "exitPoints": ["ceo-command-center-main", "ceo-auth-login-main"],
+              "dataRequirements": ["2fa-code", "attempt-count"],
+              "states": ["default", "loading", "error", "locked"]
+            },
+            {
+              "id": "ceo-auth-login-error",
+              "name": "CEO Login Error",
+              "description": "Failed auth with lockout countdown if max attempts reached.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-auth-login-main-invalid"],
+              "exitPoints": ["ceo-auth-login-main"],
+              "dataRequirements": ["error-type", "attempt-count", "lockout-duration"],
+              "states": ["default", "locked"]
+            },
+            {
+              "id": "ceo-auth-session-expired",
+              "name": "CEO Session Expired",
+              "description": "Full-screen session expiry interstitial. Auto-redirects to CEO login.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["any-ceo-authenticated-screen-ttl-exceeded"],
+              "exitPoints": ["ceo-auth-login-main"],
+              "dataRequirements": ["session-expiry-timestamp"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "command-center",
+          "name": "Command Center",
+          "screens": [
+            {
+              "id": "ceo-command-center-main",
+              "name": "MIRD Command Center",
+              "description": "30-minute CEO loop home. North Star bar, alert tray, 2x2 dept grid, client health grid. Live clock.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "complex",
+              "entryPoints": ["ceo-auth-login-main-success", "sidebar-nav"],
+              "exitPoints": ["ceo-command-center-alert-detail", "ceo-dept-growth-main", "ceo-dept-adops-main", "ceo-dept-product-main", "ceo-dept-finance-main", "ceo-clients-list", "ceo-clients-detail-overview"],
+              "dataRequirements": ["mrr", "mrr-growth-pct", "active-client-count", "churn-rate", "dept-summary-kpis", "all-client-health-scores", "alert-queue"],
+              "states": ["default", "alert-active", "no-alerts", "loading"]
+            },
+            {
+              "id": "ceo-command-center-alert-detail",
+              "name": "Alert Investigation",
+              "description": "Alert context: client, metric, % change, flagging agent, timestamp. CTA to client detail.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-command-center-main-investigate-cta"],
+              "exitPoints": ["ceo-clients-detail-overview", "ceo-command-center-main", "ceo-command-center-alert-dismiss-modal"],
+              "dataRequirements": ["alert-record", "client-summary", "metric-trend-7d", "flagging-agent-id"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-command-center-alert-dismiss-modal",
+              "name": "Dismiss Alert",
+              "description": "Confirm alert dismiss with required note. Logs dismissal with timestamp.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-command-center-alert-detail-dismiss"],
+              "exitPoints": ["ceo-command-center-main", "ceo-command-center-alert-detail"],
+              "dataRequirements": ["alert-id", "dismissal-note-input"],
+              "states": ["default", "loading", "success"]
+            },
+            {
+              "id": "ceo-clients-list",
+              "name": "All Clients",
+              "description": "Full expanded client health grid. Sortable by health, MRR, risk, name.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-command-center-main-view-all-clients"],
+              "exitPoints": ["ceo-clients-detail-overview", "ceo-command-center-main"],
+              "dataRequirements": ["all-client-records", "health-score", "mrr", "cpl", "roas", "risk-status"],
+              "states": ["default", "sorted-by-health", "sorted-by-mrr", "sorted-by-risk"]
+            }
+          ]
+        },
+        {
+          "id": "client-detail",
+          "name": "Client Detail",
+          "screens": [
+            {
+              "id": "ceo-clients-detail-overview",
+              "name": "Client Detail — Overview",
+              "description": "Single client deep dive. CPL 30-day trend, pipeline funnel, quick stats, notes.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ceo-command-center-main-client-card", "ceo-clients-list-row", "ceo-command-center-alert-detail"],
+              "exitPoints": ["ceo-clients-detail-campaigns", "ceo-clients-detail-leads", "ceo-clients-detail-timeline", "ceo-clients-detail-financials", "ceo-clients-list", "ceo-command-center-main"],
+              "dataRequirements": ["client-profile", "30d-cpl-time-series", "pipeline-stage-counts", "account-notes"],
+              "states": ["overview-tab"]
+            },
+            {
+              "id": "ceo-clients-detail-campaigns",
+              "name": "Client Detail — Campaigns",
+              "description": "Read-only campaign data for this client in CEO context with margin visibility.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-clients-detail-overview-campaigns-tab"],
+              "exitPoints": ["ceo-clients-detail-overview"],
+              "dataRequirements": ["client-campaign-records", "spend", "cpl", "roas", "health-per-campaign"],
+              "states": ["campaigns-tab"]
+            },
+            {
+              "id": "ceo-clients-detail-leads",
+              "name": "Client Detail — Leads",
+              "description": "Read-only lead list for this client in CEO context.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-clients-detail-overview-leads-tab"],
+              "exitPoints": ["ceo-clients-detail-overview"],
+              "dataRequirements": ["client-lead-records", "stages", "ai-call-statuses"],
+              "states": ["leads-tab"]
+            },
+            {
+              "id": "ceo-clients-detail-timeline",
+              "name": "Client Detail — Timeline",
+              "description": "Chronological log of all client activity: AI actions, human, auto, alerts.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-clients-detail-overview-timeline-tab"],
+              "exitPoints": ["ceo-clients-detail-overview"],
+              "dataRequirements": ["full-client-activity-log", "actor-types"],
+              "states": ["timeline-tab"]
+            },
+            {
+              "id": "ceo-clients-detail-financials",
+              "name": "Client Detail — Financials",
+              "description": "Invoice history, contract, MRR value, renewal date, gross margin, payment status.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-clients-detail-overview-financials-tab"],
+              "exitPoints": ["ceo-clients-detail-overview"],
+              "dataRequirements": ["invoice-records", "contract-terms", "mrr", "margin-data"],
+              "states": ["financials-tab"]
+            }
+          ]
+        },
+        {
+          "id": "dept-drill-downs",
+          "name": "Department Drill-Downs",
+          "screens": [
+            {
+              "id": "ceo-dept-growth-main",
+              "name": "Dept 1 — Growth & Acquisition",
+              "description": "Calls booked trend, DBR pipeline, outbound volume, close rate trend.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ceo-command-center-main-dept1-cta"],
+              "exitPoints": ["ceo-dept-growth-prospect-detail", "ceo-command-center-main"],
+              "dataRequirements": ["calls-booked-time-series", "prospect-pipeline", "outbound-volume", "close-rate-history"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-dept-growth-prospect-detail",
+              "name": "Prospect Detail",
+              "description": "Individual DBR prospect: company, contact, last outreach, stage, estimated MRR, next action.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-dept-growth-main-prospect-row"],
+              "exitPoints": ["ceo-dept-growth-main"],
+              "dataRequirements": ["prospect-record", "outreach-history", "stage-data"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-dept-adops-main",
+              "name": "Dept 2 — Ad Operations",
+              "description": "Cross-client campaign health, CPL distribution, clients at risk, AI call metrics.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ceo-command-center-main-dept2-cta"],
+              "exitPoints": ["ceo-clients-detail-overview", "ceo-command-center-main"],
+              "dataRequirements": ["cross-client-campaign-metrics", "cpl-health-distribution", "ai-call-system-metrics"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-dept-product-main",
+              "name": "Dept 3 — Product & Automation",
+              "description": "Onboarding queue, time-to-live, n8n uptime, workflow count, automation errors.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ceo-command-center-main-dept3-cta"],
+              "exitPoints": ["ceo-dept-product-onboarding-detail", "ceo-dept-product-workflow-health", "ceo-command-center-main"],
+              "dataRequirements": ["onboarding-records", "time-to-live-metrics", "n8n-health", "workflow-error-log"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-dept-product-onboarding-detail",
+              "name": "Client Onboarding Status",
+              "description": "Per-client onboarding tracker: step completion, blockers, time elapsed, action options.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-dept-product-main-onboarding-row"],
+              "exitPoints": ["ceo-dept-product-main"],
+              "dataRequirements": ["onboarding-session-record", "step-completion-status", "error-flags", "time-elapsed"],
+              "states": ["default", "stalled", "completed"]
+            },
+            {
+              "id": "ceo-dept-product-workflow-health",
+              "name": "Workflow Health Monitor",
+              "description": "n8n workflow status board: run counts, success/error rates, error log viewer.",
+              "priority": "P2",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-dept-product-main-n8n-health"],
+              "exitPoints": ["ceo-dept-product-main"],
+              "dataRequirements": ["n8n-workflow-execution-logs", "error-records"],
+              "states": ["default", "all-healthy", "errors-present"]
+            },
+            {
+              "id": "ceo-dept-finance-main",
+              "name": "Dept 4 — Financial Intelligence",
+              "description": "12-month MRR chart, aggregate metrics, P&L per client table, 90-day forecast (3 scenarios).",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ceo-command-center-main-dept4-cta", "sidebar-nav"],
+              "exitPoints": ["ceo-dept-finance-client-pl-detail", "ceo-command-center-main"],
+              "dataRequirements": ["mrr-time-series-12mo", "per-client-financials", "cac-data", "forecast-model-params"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-dept-finance-client-pl-detail",
+              "name": "Client P&L Detail",
+              "description": "Inline 6-month financial history for a single client in the P&L table.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-dept-finance-main-pl-row-expand"],
+              "exitPoints": ["ceo-dept-finance-main"],
+              "dataRequirements": ["6-month-financial-records", "spend-data"],
+              "states": ["expanded", "collapsed"]
+            }
+          ]
+        },
+        {
+          "id": "agent-log",
+          "name": "Agent Activity Log",
+          "screens": [
+            {
+              "id": "ceo-agents-log-main",
+              "name": "Autonomous Department Activity Log",
+              "description": "All 4 agent daily logs, expandable by department. Timestamped, color-coded action types.",
+              "priority": "P1",
+              "complexity": "complex",
+              "animationComplexity": "simple",
+              "entryPoints": ["sidebar-nav", "ceo-command-center-main-agent-log-shortcut"],
+              "exitPoints": ["ceo-agents-log-dept-detail", "ceo-agents-log-historical"],
+              "dataRequirements": ["all-agent-execution-logs-today", "action-types", "timestamps", "alert-cross-references"],
+              "states": ["default", "dept1-expanded", "dept2-expanded", "dept3-expanded", "dept4-expanded"]
+            },
+            {
+              "id": "ceo-agents-log-dept-detail",
+              "name": "Department Agent Full Log",
+              "description": "Full expanded log for a single department agent with all metadata and downloadable log.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-agents-log-main-view-full-log"],
+              "exitPoints": ["ceo-agents-log-main"],
+              "dataRequirements": ["full-agent-run-log", "error-records"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-agents-log-historical",
+              "name": "Agent Log History",
+              "description": "Date-picker to view historical agent logs. Calendar navigation, daily summaries.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-agents-log-main-history-cta"],
+              "exitPoints": ["ceo-agents-log-main"],
+              "dataRequirements": ["historical-agent-log-records", "date-range-selector"],
+              "states": ["default", "date-selected"]
+            }
+          ]
+        },
+        {
+          "id": "settings",
+          "name": "CEO Settings",
+          "screens": [
+            {
+              "id": "ceo-settings-main",
+              "name": "CEO Settings",
+              "description": "Settings hub: Alert Thresholds, Notifications, System Health, Account tabs.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["sidebar-nav-settings"],
+              "exitPoints": ["ceo-settings-alert-thresholds", "ceo-settings-notifications"],
+              "dataRequirements": ["current-settings-config"],
+              "states": ["default"]
+            },
+            {
+              "id": "ceo-settings-alert-thresholds",
+              "name": "Alert Threshold Configuration",
+              "description": "Numeric threshold config per alert type: CPL spike %, churn triggers, onboarding stall time.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-settings-main-alert-tab"],
+              "exitPoints": ["ceo-settings-main"],
+              "dataRequirements": ["current-threshold-values", "historical-alert-rate"],
+              "states": ["default", "editing", "saving"]
+            },
+            {
+              "id": "ceo-settings-notifications",
+              "name": "CEO Notification Preferences",
+              "description": "Alert delivery method (Slack, email, SMS), daily digest timing, urgency levels.",
+              "priority": "P2",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ceo-settings-main-notifications-tab"],
+              "exitPoints": ["ceo-settings-main"],
+              "dataRequirements": ["notification-config", "contact-details"],
+              "states": ["default", "saving"]
+            }
+          ]
+        },
+        {
+          "id": "global",
+          "name": "Global / System-Level",
+          "screens": [
+            {
+              "id": "ceo-global-404",
+              "name": "CEO — Page Not Found",
+              "description": "CEO-context JARVIS-style 404 with command center link.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["any-broken-ceo-url"],
+              "exitPoints": ["ceo-command-center-main"],
+              "dataRequirements": [],
+              "states": ["default"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onboarding-portal",
+      "name": "Client Onboarding Portal",
+      "platform": "web",
+      "primaryUser": "New Client (Marcus — first use, one-time flow)",
+      "urlBase": "onboard.makeitrain.digital/[token]",
+      "deviceSupport": "mobile-first, responsive",
+      "totalScreens": 32,
+      "flows": [
+        {
+          "id": "portal-access",
+          "name": "Portal Access",
+          "screens": [
+            {
+              "id": "ob-access-token-validating",
+              "name": "Validating Access Link",
+              "description": "Token validation loading screen with MIRD logo pulse.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["email-cta-link-click"],
+              "exitPoints": ["ob-wizard-step1-main", "ob-access-token-invalid", "ob-wizard-step1-progress-restored", "ob-access-mobile-suggestion"],
+              "dataRequirements": ["url-token", "client-record-lookup"],
+              "states": ["validating"]
+            },
+            {
+              "id": "ob-access-token-invalid",
+              "name": "Access Link Expired",
+              "description": "ACCESS TOKEN EXPIRED. Instructions to contact MIRD for new link.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-access-token-validating-invalid"],
+              "exitPoints": ["external-support-email"],
+              "dataRequirements": ["token-expiry-date", "support-contact"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-access-mobile-suggestion",
+              "name": "Desktop Recommended",
+              "description": "Soft mobile-to-desktop suggestion. Not a hard block. Dismissable.",
+              "priority": "P2",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-access-token-validating-valid-mobile-viewport"],
+              "exitPoints": ["ob-wizard-step1-main"],
+              "dataRequirements": ["viewport-size", "user-agent"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "wizard-step1",
+          "name": "Wizard Step 1 — System Initialization",
+          "screens": [
+            {
+              "id": "ob-wizard-step1-main",
+              "name": "Step 1 — System Initialization",
+              "description": "Welcome screen: client name, 5-step overview, contract details, checkbox, name field, BEGIN SETUP CTA.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "complex",
+              "entryPoints": ["ob-access-token-validating-valid-no-progress", "ob-access-mobile-suggestion"],
+              "exitPoints": ["ob-wizard-step2-main", "ob-wizard-step1-wrong-details"],
+              "dataRequirements": ["client-name", "package-tier", "start-date", "mrr"],
+              "states": ["default", "checkbox-checked", "name-filled", "ready-to-submit"]
+            },
+            {
+              "id": "ob-wizard-step1-wrong-details",
+              "name": "Step 1 — Contract Details Wrong",
+              "description": "Inline contact support panel for incorrect contract details. No navigation away.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step1-main-contact-us"],
+              "exitPoints": ["ob-wizard-step1-main"],
+              "dataRequirements": ["mird-support-contact"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step1-progress-restored",
+              "name": "Step 1 — Progress Restored",
+              "description": "Returning user progress restoration banner. Auto-advances to last-saved step after 2s.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-access-token-validating-valid-prior-progress"],
+              "exitPoints": ["ob-wizard-step2-main", "ob-wizard-step3-main", "ob-wizard-step4-main", "ob-wizard-step5-main"],
+              "dataRequirements": ["onboarding-session-record", "last-completed-step"],
+              "states": ["restoring", "redirecting"]
+            }
+          ]
+        },
+        {
+          "id": "wizard-step2",
+          "name": "Wizard Step 2 — Business Information",
+          "screens": [
+            {
+              "id": "ob-wizard-step2-main",
+              "name": "Step 2 — Mission Parameters",
+              "description": "Business info form: name, markets, audience, transaction value, ad spend, goal, notes.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step1-main-cta"],
+              "exitPoints": ["ob-wizard-step2-saving", "ob-wizard-step2-validation-error", "ob-wizard-step1-main"],
+              "dataRequirements": ["form-field-values", "validation-rules"],
+              "states": ["default", "filled", "error"]
+            },
+            {
+              "id": "ob-wizard-step2-validation-error",
+              "name": "Step 2 — Form Validation Errors",
+              "description": "Inline validation errors for missing/incorrect fields. Orange error text per field.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step2-main-invalid-submit"],
+              "exitPoints": ["ob-wizard-step2-main"],
+              "dataRequirements": ["validation-error-messages"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step2-saving",
+              "name": "Step 2 — Saving Progress",
+              "description": "Transitional save state with scan-line animation. SAVING MISSION PARAMETERS.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-step2-main-valid-submit"],
+              "exitPoints": ["ob-wizard-step3-main", "ob-wizard-step2-save-error"],
+              "dataRequirements": ["form-payload", "api-response"],
+              "states": ["saving"]
+            },
+            {
+              "id": "ob-wizard-step2-save-error",
+              "name": "Step 2 — Save Failed",
+              "description": "Server save failure. SAVE FAILED — DATA NOT TRANSMITTED. Retry CTA. Data retained locally.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step2-saving-api-error"],
+              "exitPoints": ["ob-wizard-step2-saving"],
+              "dataRequirements": ["error-code", "retained-form-data"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "wizard-step3",
+          "name": "Wizard Step 3 — Meta Ads Connection",
+          "screens": [
+            {
+              "id": "ob-wizard-step3-main",
+              "name": "Step 3 — Meta Ads Integration",
+              "description": "Guided 3-sub-step Meta setup: open manager, add system user, paste token, verify.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "complex",
+              "entryPoints": ["ob-wizard-step2-saving-success"],
+              "exitPoints": ["ob-wizard-step3-verifying", "ob-wizard-step3-help", "ob-wizard-step2-main", "ob-wizard-step3-save-later"],
+              "dataRequirements": ["token-input", "meta-api-verification-endpoint"],
+              "states": ["default", "sub-step-3a", "sub-step-3b", "sub-step-3c-token-ready"]
+            },
+            {
+              "id": "ob-wizard-step3-verifying",
+              "name": "Step 3 — Verifying Meta Token",
+              "description": "Scanning animation on token input while Meta API call validates.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["ob-wizard-step3-main-verify-cta"],
+              "exitPoints": ["ob-wizard-step3-connected", "ob-wizard-step3-error"],
+              "dataRequirements": ["token-value", "meta-api-response"],
+              "states": ["verifying"]
+            },
+            {
+              "id": "ob-wizard-step3-connected",
+              "name": "Step 3 — Meta Ads Connected",
+              "description": "META ADS CONNECTED — SYSTEM USER ACTIVE in green. Progress bar advances.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "complex",
+              "entryPoints": ["ob-wizard-step3-verifying-success"],
+              "exitPoints": ["ob-wizard-step4-main"],
+              "dataRequirements": ["meta-account-name-confirmed", "connection-record"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step3-error",
+              "name": "Step 3 — Meta Token Not Recognized",
+              "description": "TOKEN NOT RECOGNIZED error. Input cleared. Help section auto-expands.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step3-verifying-failure"],
+              "exitPoints": ["ob-wizard-step3-main", "ob-wizard-step3-help"],
+              "dataRequirements": ["meta-api-error-code"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step3-help",
+              "name": "Step 3 — Meta Setup Help",
+              "description": "Expanded help section: video walkthrough, screenshot guide, FAQ, support button.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step3-main-help-toggle", "ob-wizard-step3-error-auto-expand"],
+              "exitPoints": ["ob-wizard-step3-main"],
+              "dataRequirements": ["help-content", "support-contact"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step3-save-later",
+              "name": "Step 3 — Progress Saved",
+              "description": "PROGRESS SAVED — YOUR LINK REMAINS ACTIVE FOR N DAYS. Email reminder option.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step3-main-save-later"],
+              "exitPoints": ["external-browser-close", "ob-wizard-step3-main-re-entry"],
+              "dataRequirements": ["session-save", "expiry-date", "email-reminder-option"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "wizard-step4",
+          "name": "Wizard Step 4 — Google Integration",
+          "screens": [
+            {
+              "id": "ob-wizard-step4-main",
+              "name": "Step 4 — Google Integration",
+              "description": "Two-part: Google Ads Customer ID + invite status check; GMB search + selection + invite.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-step3-connected-continue"],
+              "exitPoints": ["ob-wizard-step4-google-ads-checking", "ob-wizard-step4-gmb-searching", "ob-wizard-step3-main", "ob-wizard-step5-main"],
+              "dataRequirements": ["google-ads-customer-id", "manager-invite-status", "gmb-places-api", "gmb-business-id"],
+              "states": ["default", "google-ads-pending", "google-ads-connected", "gmb-pending", "both-connected"]
+            },
+            {
+              "id": "ob-wizard-step4-google-ads-checking",
+              "name": "Step 4 — Checking Google Invite",
+              "description": "Async invitation acceptance check. Not a spinner — manual re-check button.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step4-main-check-status"],
+              "exitPoints": ["ob-wizard-step4-google-ads-connected", "ob-wizard-step4-main"],
+              "dataRequirements": ["google-ads-invitation-status"],
+              "states": ["checking", "pending", "accepted"]
+            },
+            {
+              "id": "ob-wizard-step4-google-ads-connected",
+              "name": "Step 4 — Google Ads Connected",
+              "description": "GOOGLE ADS CONNECTED success state. GMB section revealed.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-step4-google-ads-checking-accepted"],
+              "exitPoints": ["ob-wizard-step4-main"],
+              "dataRequirements": ["google-ads-connection-record"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step4-gmb-searching",
+              "name": "Step 4 — GMB Business Search",
+              "description": "Loading state while GMB Places API returns autocomplete results.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step4-main-gmb-search"],
+              "exitPoints": ["ob-wizard-step4-gmb-results", "ob-wizard-step4-gmb-no-results"],
+              "dataRequirements": ["gmb-places-api-search-results"],
+              "states": ["searching"]
+            },
+            {
+              "id": "ob-wizard-step4-gmb-results",
+              "name": "Step 4 — GMB Select Business",
+              "description": "Selectable list of GMB results with business name, location, rating, type.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step4-gmb-searching-results"],
+              "exitPoints": ["ob-wizard-step4-gmb-selected", "ob-wizard-step4-main"],
+              "dataRequirements": ["gmb-business-list", "rating", "location", "type"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step4-gmb-no-results",
+              "name": "Step 4 — GMB Not Found",
+              "description": "Empty GMB search result. Retry or skip GMB (Google Ads only required).",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step4-gmb-searching-empty"],
+              "exitPoints": ["ob-wizard-step4-main", "ob-wizard-step5-main"],
+              "dataRequirements": [],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-step4-gmb-selected",
+              "name": "Step 4 — GMB Business Selected",
+              "description": "Selected business card shown with invite instruction and GMB status indicator.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step4-gmb-results-select"],
+              "exitPoints": ["ob-wizard-step4-main", "ob-wizard-step5-main"],
+              "dataRequirements": ["selected-gmb-business-id", "invite-status"],
+              "states": ["selected", "invite-sent", "invite-accepted"]
+            }
+          ]
+        },
+        {
+          "id": "wizard-step5",
+          "name": "Wizard Step 5 — Creative Assets & Launch",
+          "screens": [
+            {
+              "id": "ob-wizard-step5-main",
+              "name": "Step 5 — Launch Configuration",
+              "description": "3 file drop zones (logo, photos, videos), launch date picker, notes, notification pref, SMS number.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-step4-main-continue"],
+              "exitPoints": ["ob-wizard-step5-uploading", "ob-wizard-step5-validation-error", "ob-wizard-completion-main"],
+              "dataRequirements": ["file-upload-cdn", "launch-date", "notification-preference", "sms-number"],
+              "states": ["default", "files-uploading", "files-uploaded", "ready-to-submit"]
+            },
+            {
+              "id": "ob-wizard-step5-uploading",
+              "name": "Step 5 — Uploading Assets",
+              "description": "Per-file progress bars. TRANSMITTING ASSETS. Overall progress indicator.",
+              "priority": "P0",
+              "complexity": "medium",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-step5-main-file-drop"],
+              "exitPoints": ["ob-wizard-step5-main", "ob-wizard-step5-upload-error"],
+              "dataRequirements": ["upload-progress-per-file", "cdn-response"],
+              "states": ["uploading", "partial-complete", "all-complete"]
+            },
+            {
+              "id": "ob-wizard-step5-upload-error",
+              "name": "Step 5 — Upload Failed",
+              "description": "Per-file error: UPLOAD FAILED — FILE TOO LARGE or UNSUPPORTED FORMAT. Retry per file.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step5-uploading-cdn-error"],
+              "exitPoints": ["ob-wizard-step5-main"],
+              "dataRequirements": ["error-type", "file-name", "size-limit"],
+              "states": ["size-error", "format-error"]
+            },
+            {
+              "id": "ob-wizard-step5-validation-error",
+              "name": "Step 5 — Missing Required Fields",
+              "description": "Inline validation when logo or launch date missing. Orange field errors.",
+              "priority": "P0",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step5-main-submit-invalid"],
+              "exitPoints": ["ob-wizard-step5-main"],
+              "dataRequirements": ["required-field-validation-state"],
+              "states": ["default"]
+            }
+          ]
+        },
+        {
+          "id": "completion",
+          "name": "Onboarding Completion",
+          "screens": [
+            {
+              "id": "ob-wizard-completion-main",
+              "name": "RainMachine Initializing",
+              "description": "Full-screen completion. Logo expands/glows. 0→100% progress bar 3s. Timeline with real dates. Calendar CTA.",
+              "priority": "P0",
+              "complexity": "complex",
+              "animationComplexity": "complex",
+              "entryPoints": ["ob-wizard-step5-main-complete-setup"],
+              "exitPoints": ["external-google-calendar", "ob-wizard-completion-whats-next"],
+              "dataRequirements": ["launch-date", "client-name", "next-step-dates", "onboarding-webhook-trigger"],
+              "states": ["animating", "complete"]
+            },
+            {
+              "id": "ob-wizard-completion-whats-next",
+              "name": "Completion — What Happens Next",
+              "description": "Scroll section with build timeline, launch expectation, first lead timeline, dashboard link.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "medium",
+              "entryPoints": ["ob-wizard-completion-main-scroll"],
+              "exitPoints": ["rm-dashboard-home-empty", "external-calendar"],
+              "dataRequirements": ["expected-campaign-launch-date", "mird-build-sla-dates"],
+              "states": ["default"]
+            },
+            {
+              "id": "ob-wizard-completion-already-done",
+              "name": "Setup Already Complete",
+              "description": "Re-entry state for completed onboarding. SETUP COMPLETE — YOUR RAINMACHINE IS BEING BUILT.",
+              "priority": "P1",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-access-token-validating-onboarding-complete"],
+              "exitPoints": ["rm-dashboard-home-empty", "rm-dashboard-home-main"],
+              "dataRequirements": ["onboarding-completion-flag", "build-status", "campaign-live-flag"],
+              "states": ["building", "live"]
+            }
+          ]
+        },
+        {
+          "id": "support",
+          "name": "Support & Help",
+          "screens": [
+            {
+              "id": "ob-support-contact-modal",
+              "name": "Contact Support",
+              "description": "Modal on any wizard step. Support email, phone, hours. Message input with step context.",
+              "priority": "P1",
+              "complexity": "medium",
+              "animationComplexity": "simple",
+              "entryPoints": ["any-wizard-step-contact-support"],
+              "exitPoints": ["any-wizard-step-close-modal"],
+              "dataRequirements": ["support-contact", "current-step-context", "message-input"],
+              "states": ["default", "submitting", "submitted"]
+            },
+            {
+              "id": "ob-support-video-walkthrough",
+              "name": "Video Walkthrough",
+              "description": "Video embed lightbox for Meta setup help. New tab or modal.",
+              "priority": "P2",
+              "complexity": "simple",
+              "animationComplexity": "simple",
+              "entryPoints": ["ob-wizard-step3-help-video-link"],
+              "exitPoints": ["ob-wizard-step3-main"],
+              "dataRequirements": ["video-url-per-step"],
+              "states": ["default", "playing", "closed"]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totalScreens": 112,
+  "summary": {
+    "P0": 36,
+    "P1": 55,
+    "P2": 21,
+    "P3": 0,
+    "byApp": {
+      "rainmachine-dashboard": 52,
+      "ceo-dashboard": 28,
+      "onboarding-portal": 32
+    },
+    "byComplexity": {
+      "simple": 46,
+      "medium": 41,
+      "complex": 25
+    },
+    "byAnimationComplexity": {
+      "simple": 58,
+      "medium": 33,
+      "complex": 21
+    }
+  },
+  "designSystem": {
+    "colorBackground": "#050D1A",
+    "colorCyanPrimary": "#00D4FF",
+    "colorSuccess": "#00FF88",
+    "colorAlert": "#FF6B35",
+    "colorWarning": "#FFB800",
+    "fontHeadings": "Orbitron",
+    "fontData": "Share Tech Mono",
+    "fontBody": "Inter",
+    "aesthetic": "JARVIS HUD — dark, holographic panels, geometric grid background, pulse animations"
+  },
+  "namingConvention": {
+    "format": "[app]-[flow]-[subflow]-[screen]",
+    "case": "kebab-case",
+    "prefixes": {
+      "rm": "RainMachine Dashboard",
+      "ceo": "CEO Dashboard",
+      "ob": "Onboarding Portal"
+    }
+  }
+}

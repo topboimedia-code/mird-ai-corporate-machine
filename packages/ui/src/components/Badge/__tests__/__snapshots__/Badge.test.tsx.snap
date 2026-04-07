@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Badge > renders cyan solid 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] bg-cyan/20 text-cyan"
+>
+  Cyan
+</span>
+`;
+
+exports[`Badge > renders gray solid 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] bg-surface-hover text-text-muted"
+>
+  Gray
+</span>
+`;
+
+exports[`Badge > renders green solid 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] bg-green/20 text-green"
+>
+  Green
+</span>
+`;
+
+exports[`Badge > renders orange solid 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] bg-orange/20 text-orange"
+>
+  Orange
+</span>
+`;
+
+exports[`Badge > renders outline variant 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] border border-cyan text-cyan"
+>
+  Outline
+</span>
+`;
+
+exports[`Badge > renders red solid 1`] = `
+<span
+  class="inline-flex items-center rounded font-display uppercase tracking-widest px-2 py-0.5 text-[10px] bg-red/20 text-red"
+>
+  Red
+</span>
+`;

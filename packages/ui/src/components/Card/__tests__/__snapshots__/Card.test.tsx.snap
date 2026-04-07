@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Card > renders default variant 1`] = `
+<div
+  class="rounded-lg bg-surface border border-border p-6"
+>
+  Content
+</div>
+`;
+
+exports[`Card > renders elevated variant 1`] = `
+<div
+  class="rounded-lg bg-surface border border-border shadow-card p-6"
+>
+  Content
+</div>
+`;
+
+exports[`Card > renders outlined variant 1`] = `
+<div
+  class="rounded-lg bg-transparent border border-border-hover p-6"
+>
+  Content
+</div>
+`;
+
+exports[`Card > renders with no padding 1`] = `
+<div
+  class="rounded-lg bg-surface border border-border"
+>
+  Content
+</div>
+`;

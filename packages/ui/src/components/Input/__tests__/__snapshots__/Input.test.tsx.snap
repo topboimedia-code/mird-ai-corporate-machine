@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input > renders without crashing 1`] = `
+<div
+  class="flex flex-col gap-1.5"
+>
+  <div
+    class="relative flex items-center"
+  >
+    <input
+      class="w-full rounded border bg-surface text-text font-body text-sm border-border placeholder:text-text-dim px-3 py-2 focus:outline-none focus:ring-1 focus:ring-cyan focus:border-cyan disabled:opacity-40 disabled:cursor-not-allowed"
+    />
+  </div>
+</div>
+`;

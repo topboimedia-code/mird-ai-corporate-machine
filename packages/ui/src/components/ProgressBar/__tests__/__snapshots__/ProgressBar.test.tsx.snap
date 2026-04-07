@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgressBar > renders with value 50 1`] = `
+<div
+  class="w-full"
+  data-testid="progress"
+>
+  <div
+    class="w-full rounded-full bg-surface-hover h-2"
+  >
+    <div
+      aria-valuemax="100"
+      aria-valuemin="0"
+      aria-valuenow="50"
+      class="rounded-full transition-all duration-300 bg-cyan h-2"
+      role="progressbar"
+      style="width: 50%;"
+    />
+  </div>
+</div>
+`;

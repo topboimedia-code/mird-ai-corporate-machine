@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Button > renders danger variant 1`] = `
+<button
+  class="inline-flex items-center justify-center gap-2 rounded transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed bg-red text-white hover:opacity-90 font-display uppercase tracking-widest h-9 px-4 text-sm"
+>
+  Danger
+</button>
+`;
+
+exports[`Button > renders full width 1`] = `
+<button
+  class="inline-flex items-center justify-center gap-2 rounded transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed bg-cyan text-background hover:opacity-90 font-display uppercase tracking-widest h-9 px-4 text-sm w-full"
+>
+  Full
+</button>
+`;
+
+exports[`Button > renders ghost variant 1`] = `
+<button
+  class="inline-flex items-center justify-center gap-2 rounded transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed text-text-muted hover:text-text hover:bg-surface-hover font-body h-9 px-4 text-sm"
+>
+  Ghost
+</button>
+`;
+
+exports[`Button > renders primary variant 1`] = `
+<button
+  class="inline-flex items-center justify-center gap-2 rounded transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed bg-cyan text-background hover:opacity-90 font-display uppercase tracking-widest h-9 px-4 text-sm"
+>
+  Click me
+</button>
+`;
+
+exports[`Button > renders secondary variant 1`] = `
+<button
+  class="inline-flex items-center justify-center gap-2 rounded transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-40 disabled:cursor-not-allowed border border-cyan text-cyan hover:bg-cyan/10 font-display uppercase tracking-widest h-9 px-4 text-sm"
+>
+  Click me
+</button>
+`;

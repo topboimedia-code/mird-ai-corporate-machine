@@ -1,0 +1,9 @@
+{
+  "extends": "@rainmachine/config/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "paths": {}
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

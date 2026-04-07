@@ -1,0 +1,755 @@
+{
+  "schema": "mird-ui-profile-v1",
+  "theme": "jarvis-dark",
+  "meta": {
+    "name": "MIRD JARVIS Dark",
+    "version": "1.0.0",
+    "description": "Make It Rain Digital — Iron Man JARVIS HUD design system. Deep space black-blue base, JARVIS cyan primary, military-grade terminal aesthetic.",
+    "created": "2026-03-29",
+    "author": "MIRD Design System"
+  },
+
+  "colors": {
+    "background": {
+      "base":        "#050D1A",
+      "panel":       "#0A1628",
+      "panelHover":  "#0D1E35",
+      "overlay":     "rgba(10, 22, 40, 0.85)",
+      "overlayDeep": "rgba(5, 13, 26, 0.95)"
+    },
+    "cyan": {
+      "primary":     "#00D4FF",
+      "primaryHover":"#1ADCFF",
+      "primaryActive":"#00B8E0",
+      "muted":       "#7ECFDF",
+      "deep":        "#0A4F6E",
+      "dim":         "rgba(0, 212, 255, 0.2)",
+      "dimSoft":     "rgba(0, 212, 255, 0.08)",
+      "dimTrace":    "rgba(0, 212, 255, 0.04)"
+    },
+    "status": {
+      "success":     "#00FF88",
+      "successGlow": "rgba(0, 255, 136, 0.4)",
+      "warning":     "#FFB800",
+      "warningGlow": "rgba(255, 184, 0, 0.3)",
+      "alert":       "#FF6B35",
+      "alertText":   "#FF7D52",
+      "alertGlow":   "rgba(255, 107, 53, 0.3)",
+      "error":       "#FF3333",
+      "errorGlow":   "rgba(255, 51, 51, 0.3)",
+      "processing":  "#00D4FF",
+      "standby":     "#2A4A5A"
+    },
+    "text": {
+      "primary":     "#E8F4F8",
+      "muted":       "#7ECFDF",
+      "disabled":    "#2A4A5A",
+      "inverse":     "#050D1A"
+    },
+    "border": {
+      "glow":        "rgba(0, 212, 255, 0.2)",
+      "strong":      "rgba(0, 212, 255, 0.4)",
+      "subtle":      "rgba(0, 212, 255, 0.08)",
+      "trace":       "rgba(0, 212, 255, 0.04)",
+      "alert":       "rgba(255, 107, 53, 0.4)",
+      "success":     "rgba(0, 255, 136, 0.4)",
+      "warning":     "rgba(255, 184, 0, 0.4)"
+    },
+    "badge": {
+      "new": {
+        "background": "rgba(0, 212, 255, 0.12)",
+        "border":     "rgba(0, 212, 255, 0.4)",
+        "text":       "#00D4FF"
+      },
+      "contacted": {
+        "background": "rgba(255, 184, 0, 0.12)",
+        "border":     "rgba(255, 184, 0, 0.4)",
+        "text":       "#FFB800"
+      },
+      "apptSet": {
+        "background": "rgba(0, 255, 136, 0.12)",
+        "border":     "rgba(0, 255, 136, 0.4)",
+        "text":       "#00FF88"
+      },
+      "closed": {
+        "background": "rgba(0, 255, 136, 0.2)",
+        "border":     "rgba(0, 255, 136, 0.6)",
+        "text":       "#00FF88"
+      },
+      "lost": {
+        "background": "rgba(255, 107, 53, 0.08)",
+        "border":     "rgba(255, 107, 53, 0.2)",
+        "text":       "#FF7D52"
+      }
+    },
+    "platform": {
+      "meta":    "#00D4FF",
+      "google":  "#FFB800",
+      "organic": "#00FF88"
+    },
+    "chart": {
+      "line":       "#00D4FF",
+      "lineFill":   "rgba(0, 212, 255, 0.15)",
+      "gridLines":  "rgba(0, 212, 255, 0.06)",
+      "axis":       "#7ECFDF"
+    },
+    "health": {
+      "high":   "#00FF88",
+      "medium": "#FFB800",
+      "low":    "#FF6B35"
+    }
+  },
+
+  "typography": {
+    "families": {
+      "display":  "'Orbitron', sans-serif",
+      "data":     "'Share Tech Mono', monospace",
+      "body":     "'Inter', sans-serif"
+    },
+    "googleFonts": [
+      "Orbitron:wght@400;600;700;900",
+      "Share+Tech+Mono:wght@400",
+      "Inter:wght@400;500"
+    ],
+    "scale": {
+      "displayXl": {
+        "fontFamily":    "'Orbitron', sans-serif",
+        "fontSize":      "32px",
+        "lineHeight":    "1.1",
+        "fontWeight":    "900",
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase"
+      },
+      "heading1": {
+        "fontFamily":    "'Orbitron', sans-serif",
+        "fontSize":      "24px",
+        "lineHeight":    "1.2",
+        "fontWeight":    "700",
+        "letterSpacing": "0.08em",
+        "textTransform": "uppercase"
+      },
+      "heading2": {
+        "fontFamily":    "'Orbitron', sans-serif",
+        "fontSize":      "18px",
+        "lineHeight":    "1.3",
+        "fontWeight":    "600",
+        "letterSpacing": "0.06em",
+        "textTransform": "uppercase"
+      },
+      "heading3": {
+        "fontFamily":    "'Orbitron', sans-serif",
+        "fontSize":      "14px",
+        "lineHeight":    "1.4",
+        "fontWeight":    "600",
+        "letterSpacing": "0.08em",
+        "textTransform": "uppercase"
+      },
+      "label": {
+        "fontFamily":    "'Orbitron', sans-serif",
+        "fontSize":      "11px",
+        "lineHeight":    "1.4",
+        "fontWeight":    "400",
+        "letterSpacing": "0.12em",
+        "textTransform": "uppercase"
+      },
+      "metricXl": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "48px",
+        "lineHeight":    "1.0",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "metricLg": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "32px",
+        "lineHeight":    "1.0",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "metricMd": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "24px",
+        "lineHeight":    "1.0",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "metricSm": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "16px",
+        "lineHeight":    "1.0",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "monoSm": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "13px",
+        "lineHeight":    "1.5",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "monoXs": {
+        "fontFamily":    "'Share Tech Mono', monospace",
+        "fontSize":      "11px",
+        "lineHeight":    "1.4",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "body": {
+        "fontFamily":    "'Inter', sans-serif",
+        "fontSize":      "15px",
+        "lineHeight":    "1.6",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      },
+      "bodySm": {
+        "fontFamily":    "'Inter', sans-serif",
+        "fontSize":      "13px",
+        "lineHeight":    "1.5",
+        "fontWeight":    "400",
+        "letterSpacing": "0"
+      }
+    }
+  },
+
+  "spacing": {
+    "base":    4,
+    "unit":    "px",
+    "scale": {
+      "1":   "4px",
+      "2":   "8px",
+      "3":   "12px",
+      "4":   "16px",
+      "5":   "20px",
+      "6":   "24px",
+      "8":   "32px",
+      "10":  "40px",
+      "12":  "48px",
+      "16":  "64px",
+      "20":  "80px",
+      "24":  "96px"
+    },
+    "semantic": {
+      "panelPadding":    "24px",
+      "panelGap":        "20px",
+      "sectionGap":      "16px",
+      "contentGap":      "12px",
+      "inlineGap":       "8px",
+      "pageMarginDesktop":"32px",
+      "pageMarginTablet": "20px",
+      "pageMarginMobile": "16px"
+    }
+  },
+
+  "borderRadius": {
+    "sharp":    "2px",
+    "default":  "4px",
+    "soft":     "8px",
+    "full":     "9999px"
+  },
+
+  "shadows": {
+    "panelDefault":  "0 0 20px rgba(0,212,255,0.08), inset 0 1px 0 rgba(0,212,255,0.1), inset 0 0 40px rgba(0,212,255,0.02)",
+    "panelHover":    "0 0 30px rgba(0,212,255,0.12), inset 0 1px 0 rgba(0,212,255,0.15)",
+    "glowSuccess":   "0 0 12px rgba(0,255,136,0.3)",
+    "glowAlert":     "0 0 12px rgba(255,107,53,0.3)",
+    "glowWarning":   "0 0 12px rgba(255,184,0,0.2)",
+    "glowInteractive":"0 0 20px rgba(0,212,255,0.3)",
+    "focusRing":     "0 0 0 3px rgba(0,212,255,0.15)",
+    "statusDot": {
+      "success":   "0 0 6px #00FF88, 0 0 12px rgba(0,255,136,0.4)",
+      "processing":"0 0 6px #00D4FF, 0 0 12px rgba(0,212,255,0.4)",
+      "alert":     "0 0 4px #FF6B35"
+    }
+  },
+
+  "animation": {
+    "duration": {
+      "instant":    "50ms",
+      "flash":      "100ms",
+      "fast":       "200ms",
+      "standard":   "300ms",
+      "moderate":   "500ms",
+      "scan":       "1500ms",
+      "boot":       "1200ms",
+      "draw":       "1000ms",
+      "pulse":      "2000ms",
+      "glowPulse":  "3000ms",
+      "shimmer":    "1800ms"
+    },
+    "easing": {
+      "standard":   "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      "decelerate": "cubic-bezier(0.0, 0.0, 0.2, 1)",
+      "accelerate": "cubic-bezier(0.4, 0.0, 1, 1)",
+      "spring":     "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "linear":     "linear"
+    },
+    "named": {
+      "systemPulse": {
+        "name":       "system-pulse",
+        "duration":   "2s",
+        "easing":     "ease-in-out",
+        "iterationCount": "infinite",
+        "description": "Status dot breathing animation — heartbeat of the UI"
+      },
+      "alertFlash": {
+        "name":       "alert-flash",
+        "duration":   "0.8s",
+        "easing":     "ease-in-out",
+        "iterationCount": 3,
+        "description": "Alert state indicator flashes 3 times then holds static"
+      },
+      "scanLine": {
+        "name":       "scan-line",
+        "duration":   "1.5s",
+        "easing":     "ease-in-out",
+        "iterationCount": 1,
+        "description": "Horizontal scan line sweeps panel on data load"
+      },
+      "shimmer": {
+        "name":       "shimmer",
+        "duration":   "1.8s",
+        "easing":     "ease-in-out",
+        "iterationCount": "infinite",
+        "description": "Skeleton loading shimmer effect"
+      },
+      "panelEnter": {
+        "name":       "panel-enter",
+        "duration":   "400ms",
+        "easing":     "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "iterationCount": 1,
+        "stagger":    "80ms",
+        "description": "Panel entrance — slides up from 8px with spring easing"
+      },
+      "bootCounter": {
+        "name":       "boot-counter",
+        "duration":   "1200ms",
+        "easing":     "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "iterationCount": 1,
+        "description": "Metric numbers count from 0 to final value on page load"
+      },
+      "progressDraw": {
+        "name":       "progress-draw",
+        "duration":   "1000ms",
+        "easing":     "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "iterationCount": 1,
+        "description": "Progress ring arc draws from 0 to value on mount"
+      },
+      "ambientGlow": {
+        "name":       "ambient-glow",
+        "duration":   "3s",
+        "easing":     "ease-in-out",
+        "iterationCount": "infinite",
+        "direction":  "alternate",
+        "description": "Subtle panel border glow breathes slowly"
+      },
+      "dataTick": {
+        "name":       "data-tick",
+        "duration":   "150ms",
+        "easing":     "ease-out",
+        "iterationCount": 1,
+        "description": "Single metric value update on data refresh"
+      }
+    }
+  },
+
+  "components": {
+    "panelCard": {
+      "background":    "#0A1628",
+      "border":        "1px solid rgba(0,212,255,0.2)",
+      "borderRadius":  "4px",
+      "padding":       "24px",
+      "boxShadow":     "0 0 20px rgba(0,212,255,0.08), inset 0 1px 0 rgba(0,212,255,0.1), inset 0 0 40px rgba(0,212,255,0.02)",
+      "hoverBorder":   "1px solid rgba(0,212,255,0.4)",
+      "hoverShadow":   "0 0 30px rgba(0,212,255,0.12)",
+      "headerBorder":  "1px solid rgba(0,212,255,0.1)",
+      "headerPaddingBottom": "16px",
+      "headerMarginBottom":  "16px"
+    },
+    "metricReadout": {
+      "labelFont":     "'Orbitron', sans-serif",
+      "labelSize":     "11px",
+      "labelWeight":   "400",
+      "labelSpacing":  "0.12em",
+      "labelColor":    "#7ECFDF",
+      "valueFont":     "'Share Tech Mono', monospace",
+      "valueSizeXl":   "48px",
+      "valueSizeLg":   "32px",
+      "valueSizeMd":   "24px",
+      "valueSizeSm":   "16px",
+      "valueColor":    "#E8F4F8",
+      "deltaFont":     "'Share Tech Mono', monospace",
+      "deltaSize":     "13px",
+      "deltaPositive": "#00FF88",
+      "deltaNegative": "#FF6B35",
+      "deltaNeutral":  "#7ECFDF",
+      "bootDuration":  "1200ms",
+      "bootEasing":    "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+    },
+    "statusIndicator": {
+      "dotSize":       "8px",
+      "dotBorderRadius":"50%",
+      "labelFont":     "'Orbitron', sans-serif",
+      "labelSize":     "11px",
+      "labelSpacing":  "0.1em",
+      "gap":           "8px",
+      "states": {
+        "online": {
+          "color": "#00FF88",
+          "glow":  "0 0 6px #00FF88",
+          "animation": "system-pulse 2s ease-in-out infinite"
+        },
+        "processing": {
+          "color": "#00D4FF",
+          "glow":  "0 0 6px #00D4FF",
+          "animation": "system-pulse 1.2s ease-in-out infinite"
+        },
+        "atRisk": {
+          "color": "#FF6B35",
+          "glow":  "0 0 4px #FF6B35",
+          "animation": "alert-flash 0.8s ease-in-out 3"
+        },
+        "offline": {
+          "color": "#FF3333",
+          "glow":  "none",
+          "animation": "none"
+        },
+        "standby": {
+          "color": "#2A4A5A",
+          "glow":  "none",
+          "animation": "system-pulse 4s ease-in-out infinite"
+        }
+      }
+    },
+    "button": {
+      "primary": {
+        "background":    "#00D4FF",
+        "color":         "#050D1A",
+        "border":        "none",
+        "borderRadius":  "4px",
+        "paddingY":      "12px",
+        "paddingX":      "24px",
+        "font":          "'Orbitron', sans-serif",
+        "fontSize":      "13px",
+        "fontWeight":    "600",
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase",
+        "hoverBackground": "#1ADCFF",
+        "hoverShadow":   "0 0 20px rgba(0,212,255,0.3)",
+        "activeBackground": "#00B8E0",
+        "disabledBackground": "#0A4F6E",
+        "disabledColor": "#2A4A5A"
+      },
+      "secondary": {
+        "background":    "transparent",
+        "color":         "#00D4FF",
+        "border":        "1px solid rgba(0,212,255,0.4)",
+        "borderRadius":  "4px",
+        "paddingY":      "11px",
+        "paddingX":      "24px",
+        "font":          "'Orbitron', sans-serif",
+        "fontSize":      "13px",
+        "fontWeight":    "600",
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase",
+        "hoverBorder":   "1px solid #00D4FF",
+        "hoverBackground": "rgba(0,212,255,0.08)",
+        "hoverShadow":   "0 0 12px rgba(0,212,255,0.15)"
+      },
+      "ghost": {
+        "background":    "transparent",
+        "color":         "#00D4FF",
+        "border":        "none",
+        "font":          "'Orbitron', sans-serif",
+        "fontSize":      "11px",
+        "letterSpacing": "0.1em",
+        "textTransform": "uppercase",
+        "hoverColor":    "#1ADCFF",
+        "hoverTextShadow": "0 0 8px rgba(0,212,255,0.5)"
+      }
+    },
+    "inputField": {
+      "background":    "rgba(0,212,255,0.04)",
+      "border":        "1px solid rgba(0,212,255,0.2)",
+      "borderRadius":  "4px",
+      "paddingY":      "12px",
+      "paddingX":      "16px",
+      "font":          "'Inter', sans-serif",
+      "fontSize":      "15px",
+      "color":         "#E8F4F8",
+      "placeholderColor": "#2A4A5A",
+      "focusBorder":   "#00D4FF",
+      "focusShadow":   "0 0 0 3px rgba(0,212,255,0.15)",
+      "errorBorder":   "rgba(255,107,53,0.6)",
+      "errorShadow":   "0 0 0 3px rgba(255,107,53,0.1)",
+      "labelFont":     "'Orbitron', sans-serif",
+      "labelSize":     "11px",
+      "labelSpacing":  "0.1em",
+      "labelColor":    "#7ECFDF",
+      "labelMarginBottom": "8px"
+    },
+    "navigation": {
+      "sidebar": {
+        "widthExpanded":  "240px",
+        "widthCollapsed": "64px",
+        "background":     "rgba(10, 22, 40, 0.95)",
+        "borderRight":    "1px solid rgba(0,212,255,0.15)",
+        "itemFont":       "'Orbitron', sans-serif",
+        "itemFontSize":   "11px",
+        "itemSpacing":    "0.1em",
+        "itemPaddingY":   "12px",
+        "itemPaddingX":   "20px",
+        "itemGap":        "2px",
+        "activeBackground": "rgba(0,212,255,0.08)",
+        "activeBorderLeft": "2px solid #00D4FF",
+        "activeColor":    "#00D4FF",
+        "hoverBackground": "rgba(0,212,255,0.05)",
+        "hoverColor":     "#E8F4F8",
+        "iconSize":       "20px",
+        "iconColor":      "#7ECFDF",
+        "iconActiveColor":"#00D4FF",
+        "transitionDuration": "200ms"
+      },
+      "tabBar": {
+        "height":         "60px",
+        "background":     "rgba(10, 22, 40, 0.98)",
+        "borderTop":      "1px solid rgba(0,212,255,0.15)",
+        "backdropFilter": "blur(12px)",
+        "activeAccent":   "2px solid #00D4FF",
+        "iconSize":       "22px",
+        "labelSize":      "10px",
+        "labelFont":      "'Orbitron', sans-serif",
+        "labelSpacing":   "0.08em"
+      }
+    },
+    "progressRing": {
+      "sizes": {
+        "lg": { "radius": 40, "strokeWidth": 3, "labelSize": "16px" },
+        "md": { "radius": 28, "strokeWidth": 2.5, "labelSize": "12px" },
+        "sm": { "radius": 20, "strokeWidth": 2, "labelSize": "10px" }
+      },
+      "trackColor":     "rgba(0,212,255,0.1)",
+      "strokeLinecap":  "round",
+      "labelFont":      "'Share Tech Mono', monospace",
+      "labelColor":     "#E8F4F8",
+      "drawDuration":   "1000ms",
+      "drawEasing":     "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      "colors": {
+        "high":   { "stroke": "#00FF88", "filter": "drop-shadow(0 0 4px #00FF88)" },
+        "medium": { "stroke": "#FFB800", "filter": "drop-shadow(0 0 4px #FFB800)" },
+        "low":    { "stroke": "#FF6B35", "filter": "drop-shadow(0 0 4px #FF6B35)" }
+      }
+    },
+    "dataTable": {
+      "headerFont":     "'Orbitron', sans-serif",
+      "headerSize":     "11px",
+      "headerSpacing":  "0.1em",
+      "headerColor":    "#7ECFDF",
+      "headerPaddingY": "12px",
+      "headerPaddingX": "16px",
+      "headerBorder":   "1px solid rgba(0,212,255,0.15)",
+      "cellFont":       "'Share Tech Mono', monospace",
+      "cellSize":       "13px",
+      "cellColor":      "#E8F4F8",
+      "cellPaddingY":   "12px",
+      "cellPaddingX":   "16px",
+      "cellBorder":     "1px solid rgba(0,212,255,0.06)",
+      "rowHoverBackground": "rgba(0,212,255,0.04)",
+      "rowHoverAccent": "2px solid #00D4FF",
+      "rowAltBackground": "rgba(0,212,255,0.02)"
+    },
+    "alertItem": {
+      "critical": {
+        "borderLeft":  "3px solid #FF6B35",
+        "background":  "rgba(255,107,53,0.04)"
+      },
+      "warning": {
+        "borderLeft":  "3px solid #FFB800",
+        "background":  "rgba(255,184,0,0.04)"
+      },
+      "info": {
+        "borderLeft":  "3px solid #00D4FF",
+        "background":  "rgba(0,212,255,0.04)"
+      },
+      "padding":         "12px 16px",
+      "borderRadius":    "0 4px 4px 0",
+      "categoryFont":    "'Orbitron', sans-serif",
+      "categorySize":    "10px",
+      "categorySpacing": "0.1em",
+      "detailFont":      "'Inter', sans-serif",
+      "detailSize":      "14px",
+      "sourceFont":      "'Share Tech Mono', monospace",
+      "sourceSize":      "11px",
+      "sourceColor":     "#7ECFDF"
+    },
+    "tooltip": {
+      "background":    "#0D1E35",
+      "border":        "1px solid rgba(0,212,255,0.3)",
+      "borderRadius":  "4px",
+      "paddingY":      "8px",
+      "paddingX":      "12px",
+      "font":          "'Inter', sans-serif",
+      "fontSize":      "12px",
+      "color":         "#E8F4F8",
+      "boxShadow":     "0 4px 16px rgba(0,0,0,0.4)",
+      "zIndex":        60
+    },
+    "clientHealthCard": {
+      "width":         "100%",
+      "padding":       "16px",
+      "borderRadius":  "4px",
+      "progressBarHeight": "4px",
+      "progressBarRadius": "2px",
+      "nameFont":      "'Orbitron', sans-serif",
+      "nameFontSize":  "13px",
+      "orgFont":       "'Inter', sans-serif",
+      "orgFontSize":   "12px",
+      "orgColor":      "#7ECFDF",
+      "metricFont":    "'Share Tech Mono', monospace",
+      "metricSize":    "12px"
+    },
+    "onboardingStep": {
+      "indicatorSize":    "36px",
+      "indicatorFont":    "'Orbitron', sans-serif",
+      "indicatorFontSize":"14px",
+      "activeBackground": "#00D4FF",
+      "activeColor":      "#050D1A",
+      "activeGlow":       "0 0 16px rgba(0,212,255,0.4)",
+      "completedBackground": "#00FF88",
+      "completedColor":   "#050D1A",
+      "upcomingBackground": "transparent",
+      "upcomingBorder":   "1px solid rgba(0,212,255,0.2)",
+      "upcomingColor":    "#2A4A5A",
+      "connectorColor":   "rgba(0,212,255,0.2)",
+      "connectorActiveColor": "#00D4FF",
+      "connectorHeight":  "2px"
+    }
+  },
+
+  "breakpoints": {
+    "wideDesktop": {
+      "min":         "1440px",
+      "grid":        "12-column",
+      "gutters":     "24px",
+      "margins":     "32px",
+      "panelLayout": "2x2 grid"
+    },
+    "desktop": {
+      "min":         "1024px",
+      "max":         "1439px",
+      "grid":        "12-column",
+      "gutters":     "20px",
+      "margins":     "24px",
+      "panelLayout": "2x2 grid"
+    },
+    "tablet": {
+      "min":         "768px",
+      "max":         "1023px",
+      "grid":        "8-column",
+      "gutters":     "16px",
+      "margins":     "20px",
+      "panelLayout": "2-column stacked",
+      "navBehavior": "collapsed to icon rail"
+    },
+    "mobile": {
+      "min":         "375px",
+      "max":         "767px",
+      "grid":        "4-column",
+      "gutters":     "16px",
+      "margins":     "16px",
+      "panelLayout": "single column",
+      "navBehavior": "bottom tab bar"
+    }
+  },
+
+  "layout": {
+    "dashboardSidebar": {
+      "widthExpanded":  "240px",
+      "widthCollapsed": "64px"
+    },
+    "dashboardHeader": {
+      "height": "52px"
+    },
+    "northStarBar": {
+      "height": "48px",
+      "position": "sticky",
+      "top": "52px",
+      "zIndex": 20
+    },
+    "wizardPanel": {
+      "maxWidth":  "720px",
+      "padding":   "48px"
+    },
+    "sideDetailPanel": {
+      "width":     "400px",
+      "animation": "slide-in from right, 300ms ease-out"
+    }
+  },
+
+  "zIndex": {
+    "base":      0,
+    "raised":    10,
+    "panel":     20,
+    "overlay":   30,
+    "modal":     40,
+    "toast":     50,
+    "tooltip":   60,
+    "skipLink":  70
+  },
+
+  "accessibility": {
+    "minContrastNormal":  4.5,
+    "minContrastLarge":   3.0,
+    "minTouchTarget":     "44px",
+    "focusRing":          "2px solid #00D4FF",
+    "focusRingOffset":    "2px",
+    "focusRingGlow":      "0 0 0 3px rgba(0,212,255,0.15)",
+    "reducedMotion": {
+      "animationDuration": "0.01ms",
+      "transitionDuration": "0.01ms",
+      "pulseDotStyle":     "static, full opacity"
+    }
+  },
+
+  "background": {
+    "gridPattern": {
+      "style": "repeating-linear-gradient",
+      "direction": "0deg and 90deg",
+      "gridSize": "40px",
+      "lineColor": "rgba(0,212,255,0.03)",
+      "lineWidth": "1px"
+    }
+  },
+
+  "copyBank": {
+    "emptyStates": {
+      "noLeads":        "AWAITING INCOMING SIGNALS",
+      "noCampaigns":    "NO ACTIVE CAMPAIGNS DETECTED",
+      "noReports":      "INTELLIGENCE REPORTS INITIALIZING",
+      "noAgentActivity":"AGENT STANDBY — AWAITING FIRST RUN",
+      "noAlerts":       "NO ESCALATIONS — ALL SYSTEMS NOMINAL"
+    },
+    "systemStatus": {
+      "online":         "RAINMACHINE SYSTEM — ONLINE",
+      "processing":     "SYNCHRONIZING DATA FEEDS...",
+      "offline":        "SYSTEM FAULT — CONTACT SUPPORT",
+      "sessionExpired": "SESSION EXPIRED — REINITIALIZING AUTHENTICATION"
+    },
+    "onboarding": {
+      "step1Title":     "SYSTEM INITIALIZATION",
+      "step2Title":     "MISSION PARAMETERS",
+      "step3Title":     "META ADS INTEGRATION",
+      "step4Title":     "GOOGLE INTEGRATION",
+      "step5Title":     "LAUNCH CONFIGURATION",
+      "completeTitle":  "RAINMACHINE INITIALIZING",
+      "completeSubtitle": "YOUR SYSTEM IS BEING BUILT."
+    },
+    "aiChat": {
+      "placeholder1":   "Ask about your CPL this week...",
+      "placeholder2":   "What drove the appointment spike on Tuesday?",
+      "placeholder3":   "Compare my agents' close rates...",
+      "placeholder4":   "Why did my Meta spend efficiency drop?",
+      "processingLabel":"PROCESSING QUERY...",
+      "sendButton":     "TRANSMIT"
+    }
+  }
+}

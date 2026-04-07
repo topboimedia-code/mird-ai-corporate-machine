@@ -1,0 +1,602 @@
+openapi: 3.1.0
+info:
+  title: MIRD AI Corporate Machine — Webhook & External API Specification
+  version: 1.0.0
+  description: |
+    OpenAPI 3.1 specification for MIRD's externally-facing HTTP endpoints.
+
+    **Architecture note:** MIRD uses Next.js Server Actions for all client→server mutations
+    (no REST API for internal use). This spec covers ONLY:
+    1. Supabase Edge Functions — webhook receivers (GHL, Retell AI, Google OAuth)
+    2. n8n trigger endpoints (provisioning)
+
+    All endpoints are Supabase Edge Functions running on Deno.
+    Base URL: https://{project-ref}.supabase.co/functions/v1
+
+  contact:
+    name: MIRD Engineering
+    email: shomari@makeitrain.digital
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://{project_ref}.supabase.co/functions/v1
+    description: Supabase Edge Functions (Production)
+    variables:
+      project_ref:
+        default: mird-production
+        description: Supabase project reference ID
+
+security:
+  - WebhookSecret: []
+  - ServiceRoleKey: []
+
+# =============================================================================
+# PATHS
+# =============================================================================
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # GHL Webhook — receives GoHighLevel contact and pipeline events
+  # ---------------------------------------------------------------------------
+  /ghl-webhook:
+    post:
+      summary: GoHighLevel Webhook Receiver
+      description: |
+        Receives webhook events from GoHighLevel when contacts are created
+        or moved between pipeline stages. Validates HMAC-SHA256 signature
+        using the stored webhook_secret_ref from ghl_accounts table.
+
+        **Triggered by:** GHL automation → contact.created, pipeline_stage.updated
+        **Processed by:** n8n Lead Router Workflow (for new contacts)
+        **Writes to:** leads, appointments tables via Supabase admin client
+
+        **Rate limiting:** 1000 req/min per GHL sub-account
+      operationId: ghlWebhookReceive
+      security:
+        - GHLWebhookSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/GHLContactCreated'
+                - $ref: '#/components/schemas/GHLPipelineStageUpdated'
+            examples:
+              contactCreated:
+                summary: New lead from Meta Ads
+                value:
+                  type: contact.created
+                  locationId: "loc_abc123"
+                  contact:
+                    id: "ghl_contact_xyz789"
+                    firstName: "Marcus"
+                    lastName: "Johnson"
+                    email: "marcus@email.com"
+                    phone: "+15551234567"
+                    source: "Meta Ads"
+                    tags: ["new-lead", "meta"]
+                    customFields: []
+              stageUpdated:
+                summary: Lead moved to Appointment Set
+                value:
+                  type: pipeline_stage.updated
+                  locationId: "loc_abc123"
+                  contactId: "ghl_contact_xyz789"
+                  pipelineId: "pipe_001"
+                  stageId: "stage_appt_set"
+                  stageName: "Appointment Set"
+                  previousStageId: "stage_contacted"
+                  previousStageName: "Contacted"
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSuccess'
+        '400':
+          description: Invalid payload or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '401':
+          description: Invalid HMAC signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '404':
+          description: No GHL account found for this locationId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '500':
+          description: Internal processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+
+  # ---------------------------------------------------------------------------
+  # Retell AI Webhook — receives call completion events
+  # ---------------------------------------------------------------------------
+  /retell-webhook:
+    post:
+      summary: Retell AI Call Completion Webhook
+      description: |
+        Receives call_ended events from Retell AI after a voice call completes.
+        Updates ai_calls table with disposition, transcript, and summary.
+        Triggers lead stage update if disposition = APPT_SET.
+        Pushes Supabase Realtime notification to RainMachine dashboard.
+
+        **Triggered by:** Retell AI → call completed
+        **Writes to:** ai_calls, leads (stage update on APPT_SET)
+        **Fires:** Supabase Realtime broadcast to org channel
+
+        **Security:** Validates Retell-Signature header (HMAC-SHA256)
+      operationId: retellWebhookReceive
+      security:
+        - RetellWebhookSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetellCallEnded'
+            examples:
+              callCompleted:
+                summary: Successful call — appointment set
+                value:
+                  event: call_ended
+                  call:
+                    call_id: "call_retell_abc123"
+                    agent_id: "agent_retell_001"
+                    call_status: "ended"
+                    call_type: "outbound_api"
+                    start_timestamp: 1743400000000
+                    end_timestamp: 1743400240000
+                    duration_ms: 240000
+                    recording_url: "https://retell.ai/recordings/call_abc123.mp3"
+                    transcript: "Agent: Hi, is this Marcus?..."
+                    call_analysis:
+                      call_summary: "Prospect expressed strong interest in 3-bed properties under $450K. Agreed to schedule a showing Thursday 2pm."
+                      user_sentiment: "Positive"
+                      call_successful: true
+                      custom_analysis_data:
+                        disposition: "APPT_SET"
+                    metadata:
+                      lead_id: "lead-uuid-here"
+                      organization_id: "org-uuid-here"
+                      call_type: "RETELL_NEW_LEAD"
+      responses:
+        '200':
+          description: Call record updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSuccess'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '401':
+          description: Invalid Retell signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '404':
+          description: Lead not found for provided lead_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+
+  # ---------------------------------------------------------------------------
+  # Google OAuth Callback — exchanges code for tokens
+  # ---------------------------------------------------------------------------
+  /google-oauth-callback:
+    get:
+      summary: Google OAuth 2.0 Callback Handler
+      description: |
+        Receives the OAuth authorization code from Google after the client
+        grants access to their Google Ads account (and optionally GMB).
+
+        **Flow:**
+        1. Client initiated OAuth from Onboarding Step 4
+        2. Google redirects here with ?code=... and ?state=sessionId
+        3. Edge Function exchanges code for access + refresh tokens
+        4. Tokens stored in Supabase Vault (never in DB directly)
+        5. Vault references stored in ad_accounts table
+        6. Redirects client back to /setup/step-4?connected=true
+
+        **Security:** state param = onboarding session ID (CSRF protection)
+      operationId: googleOAuthCallback
+      security: []   # No auth header — OAuth flow uses state param
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Google OAuth authorization code (single-use, 10min expiry)
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Onboarding session ID (used as CSRF token)
+        - name: error
+          in: query
+          required: false
+          schema:
+            type: string
+          description: OAuth error code if user denied access
+        - name: error_description
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Human-readable error description
+      responses:
+        '302':
+          description: Redirect to onboarding portal
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |
+                Success: https://setup.makeitrain.digital/setup/step-4?connected=true
+                Error:   https://setup.makeitrain.digital/setup/step-4?error=ACCESS_DENIED
+        '400':
+          description: Missing or invalid state parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '500':
+          description: Token exchange failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+
+  # ---------------------------------------------------------------------------
+  # Provision Org — triggered by n8n after onboarding complete
+  # ---------------------------------------------------------------------------
+  /provision-org:
+    post:
+      summary: Provision New Client Organization
+      description: |
+        Called by n8n Onboarding Provisioner workflow after a client completes
+        the onboarding wizard. Creates all database records for the new org.
+
+        **Triggered by:** n8n (internal only — requires service role key)
+        **Actions:**
+        1. Creates organization record
+        2. Creates ghl_accounts record
+        3. Creates ad_accounts records (META + GOOGLE if connected)
+        4. Seeds agents from step2_data.team_size
+        5. Creates subscription record
+        6. Updates onboarding_session status = COMPLETE
+        7. Fires welcome notification
+
+        **Security:** Requires Supabase service_role key in Authorization header
+      operationId: provisionOrg
+      security:
+        - ServiceRoleKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionOrgRequest'
+            examples:
+              newOrg:
+                summary: New client provisioning
+                value:
+                  sessionId: "ob-session-uuid-here"
+                  ghlSubAccountId: "ghl_sub_abc123"
+                  ghlLocationId: "loc_abc123"
+      responses:
+        '200':
+          description: Organization provisioned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionOrgSuccess'
+        '400':
+          description: Invalid request or session already provisioned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '401':
+          description: Missing or invalid service role key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '404':
+          description: Onboarding session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '409':
+          description: Organization already provisioned for this session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookError'
+        '500':
+          description: Provisioning failed — partial state, rollback attempted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionOrgError'
+
+# =============================================================================
+# COMPONENTS
+# =============================================================================
+
+components:
+
+  # ---------------------------------------------------------------------------
+  # Security Schemes
+  # ---------------------------------------------------------------------------
+  securitySchemes:
+    GHLWebhookSignature:
+      type: apiKey
+      in: header
+      name: X-GHL-Signature
+      description: |
+        HMAC-SHA256 of request body using the org's webhook_secret (stored in Supabase Vault).
+        Format: sha256={hex_digest}
+
+    RetellWebhookSignature:
+      type: apiKey
+      in: header
+      name: X-Retell-Signature
+      description: |
+        HMAC-SHA256 of request body using the Retell webhook secret.
+        Format: sha256={hex_digest}
+
+    ServiceRoleKey:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase service_role JWT — internal use only (n8n, Edge Functions)
+
+    WebhookSecret:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token for webhook endpoints
+
+  # ---------------------------------------------------------------------------
+  # Schemas
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # --- GHL Payloads ---
+    GHLContactCreated:
+      type: object
+      required: [type, locationId, contact]
+      properties:
+        type:
+          type: string
+          enum: [contact.created]
+        locationId:
+          type: string
+          description: GHL location ID — used to look up organization
+        contact:
+          type: object
+          required: [id, firstName, lastName, phone]
+          properties:
+            id:
+              type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+            source:
+              type: string
+            tags:
+              type: array
+              items:
+                type: string
+            customFields:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  value:
+                    type: string
+
+    GHLPipelineStageUpdated:
+      type: object
+      required: [type, locationId, contactId, pipelineId, stageId, stageName]
+      properties:
+        type:
+          type: string
+          enum: [pipeline_stage.updated]
+        locationId:
+          type: string
+        contactId:
+          type: string
+        pipelineId:
+          type: string
+        stageId:
+          type: string
+        stageName:
+          type: string
+        previousStageId:
+          type: string
+        previousStageName:
+          type: string
+
+    # --- Retell Payload ---
+    RetellCallEnded:
+      type: object
+      required: [event, call]
+      properties:
+        event:
+          type: string
+          enum: [call_ended]
+        call:
+          type: object
+          required: [call_id, agent_id, call_status, duration_ms, metadata]
+          properties:
+            call_id:
+              type: string
+            agent_id:
+              type: string
+            call_status:
+              type: string
+            call_type:
+              type: string
+            start_timestamp:
+              type: integer
+            end_timestamp:
+              type: integer
+            duration_ms:
+              type: integer
+            recording_url:
+              type: string
+              format: uri
+            transcript:
+              type: string
+            call_analysis:
+              type: object
+              properties:
+                call_summary:
+                  type: string
+                user_sentiment:
+                  type: string
+                  enum: [Positive, Neutral, Negative]
+                call_successful:
+                  type: boolean
+                custom_analysis_data:
+                  type: object
+                  properties:
+                    disposition:
+                      type: string
+                      enum: [INTERESTED, NOT_INTERESTED, CALL_BACK, APPT_SET, WRONG_NUMBER, DNC, VOICEMAIL_LEFT]
+            metadata:
+              type: object
+              required: [lead_id, organization_id, call_type]
+              properties:
+                lead_id:
+                  type: string
+                  format: uuid
+                organization_id:
+                  type: string
+                  format: uuid
+                call_type:
+                  type: string
+                  enum: [RETELL_NEW_LEAD, RETELL_COLD_OUTBOUND, RETELL_DBR]
+
+    # --- Provision Org ---
+    ProvisionOrgRequest:
+      type: object
+      required: [sessionId, ghlSubAccountId, ghlLocationId]
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        ghlSubAccountId:
+          type: string
+        ghlLocationId:
+          type: string
+
+    ProvisionOrgSuccess:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        organizationId:
+          type: string
+          format: uuid
+        message:
+          type: string
+          example: "Organization provisioned successfully"
+
+    ProvisionOrgError:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [PROVISIONING_FAILED]
+            message:
+              type: string
+            partialState:
+              type: object
+              description: What was created before failure (for manual recovery)
+
+    # --- Generic Webhook Responses ---
+    WebhookSuccess:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+
+    WebhookError:
+      type: object
+      required: [ok, error]
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              example: INVALID_SIGNATURE
+            message:
+              type: string
+              description: Human-readable error description
+            details:
+              type: object
+              description: Additional context for debugging

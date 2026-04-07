@@ -1,0 +1,28 @@
+{
+  "name": "@rainmachine/config",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./tsconfig.json": "./tsconfig.json",
+    "./eslint-preset": "./eslint-preset.js",
+    "./tailwind-preset": "./tailwind-preset.ts",
+    "./vitest-config": "./src/vitest.config.ts"
+  },
+  "files": [
+    "tsconfig.json",
+    "eslint-preset.js",
+    "tailwind-preset.ts",
+    "src/"
+  ],
+  "scripts": {
+    "lint": "echo \"No lint for config package\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.2.2",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=8"
+  }
+}
