@@ -60,17 +60,17 @@ export async function middleware(request: NextRequest) {
     // the custom_access_token_hook (public.custom_access_token_hook)
     let jwtRole: string | undefined;
     const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData.session?.access_token) {
+    const accessToken = sessionData.session?.access_token;
+    if (accessToken) {
       try {
-        const payload = JSON.parse(
-          atob(
-            sessionData.session.access_token
-              .split(".")[1]
-              .replace(/-/g, "+")
-              .replace(/_/g, "/"),
-          ),
-        ) as Record<string, unknown>;
-        jwtRole = payload["role"] as string | undefined;
+        const parts = accessToken.split(".");
+        const encodedPayload = parts[1];
+        if (encodedPayload) {
+          const payload = JSON.parse(
+            atob(encodedPayload.replace(/-/g, "+").replace(/_/g, "/")),
+          ) as Record<string, unknown>;
+          jwtRole = payload["role"] as string | undefined;
+        }
       } catch {
         // malformed token — deny access
       }
