@@ -49,12 +49,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // CEO role enforcement via app_metadata (set during user provisioning)
+  // CEO role enforcement — check app_metadata (set via admin) or JWT custom claims
   if (user && !isAuthRoute) {
-    const role =
-      (user.app_metadata as Record<string, string> | undefined)?.["role"] ??
-      (user.user_metadata as Record<string, string> | undefined)?.["role"];
+    // app_metadata.role is set by the admin SQL provisioning step
+    const appRole = (user.app_metadata as Record<string, string> | undefined)?.[
+      "role"
+    ];
 
+    // Fallback: decode the JWT access token to read custom claims injected by
+    // the custom_access_token_hook (public.custom_access_token_hook)
+    let jwtRole: string | undefined;
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      try {
+        const payload = JSON.parse(
+          atob(
+            sessionData.session.access_token
+              .split(".")[1]
+              .replace(/-/g, "+")
+              .replace(/_/g, "/"),
+          ),
+        ) as Record<string, unknown>;
+        jwtRole = payload["role"] as string | undefined;
+      } catch {
+        // malformed token — deny access
+      }
+    }
+
+    const role = appRole ?? jwtRole;
     if (role !== "ceo") {
       return NextResponse.redirect(new URL("/login", request.url));
     }
