@@ -13,6 +13,7 @@ export type { Database };
  */
 export interface CookieAdapter {
   getAll: () => Array<{ name: string; value: string }>;
+  set?: (name: string, value: string, options: Record<string, unknown>) => void;
 }
 
 export function createServerClient(cookieStore: CookieAdapter) {
@@ -24,8 +25,13 @@ export function createServerClient(cookieStore: CookieAdapter) {
         getAll() {
           return cookieStore.getAll();
         },
-        // setAll is intentionally omitted — mutations are handled by middleware
-        // which uses @supabase/ssr's createServerClient directly
+        setAll(cookiesToSet) {
+          if (cookieStore.set) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set!(name, value, options as Record<string, unknown>);
+            });
+          }
+        },
       },
     },
   );

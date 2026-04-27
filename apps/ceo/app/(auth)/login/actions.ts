@@ -4,11 +4,27 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { createServerClient } from "@rainmachine/db";
+import type { CookieAdapter } from "@rainmachine/db";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
+
+async function getSupabaseClient() {
+  const cookieStore = await cookies();
+  const adapter: CookieAdapter = {
+    getAll: () => cookieStore.getAll(),
+    set: (name, value, options) => {
+      try {
+        cookieStore.set({ name, value, ...options });
+      } catch {
+        // Server actions can set cookies — ignore edge case errors
+      }
+    },
+  };
+  return createServerClient(adapter);
+}
 
 export async function ceoLoginAction(
   _prevState: {
@@ -27,8 +43,7 @@ export async function ceoLoginAction(
     return { error: "Invalid email or password." };
   }
 
-  const cookieStore = await cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = await getSupabaseClient();
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
@@ -77,8 +92,7 @@ export async function ceoLoginAction(
 }
 
 export async function logoutAction(): Promise<void> {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(cookieStore);
+  const supabase = await getSupabaseClient();
   await supabase.auth.signOut();
   redirect("/login");
 }
