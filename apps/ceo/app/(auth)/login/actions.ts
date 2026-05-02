@@ -71,10 +71,8 @@ export async function ceoLoginAction(
   const { data: factorsData } = await supabase.auth.mfa.listFactors();
   const totpFactor = factorsData?.totp?.[0];
 
-  // TODO: Re-enable MFA enforcement after initial CEO account setup
-  // Temporarily allow login without MFA so CEO can enroll TOTP
   if (!totpFactor) {
-    redirect("/");
+    return { error: "MFA not configured. Contact support." };
   }
 
   const { data: mfaData, error: mfaError } = await supabase.auth.mfa.challenge(
